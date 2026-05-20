@@ -1,0 +1,2550 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#2D7A4F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Salão Érika">
+<title>Salão Érika — Gestão</title>
+
+<link rel="manifest" href='data:application/manifest+json,{"name":"Salão Érika","short_name":"Érika","description":"Gestão do Salão de Beleza Érika","start_url":".","display":"standalone","orientation":"portrait","background_color":"%23FBF6F2","theme_color":"%238B4A6B","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 512 512%27><rect width=%27512%27 height=%27512%27 rx=%2796%27 fill=%27%238B4A6B%27/><text x=%27256%27 y=%27340%27 font-family=%27Georgia,serif%27 font-size=%27280%27 font-style=%27italic%27 text-anchor=%27middle%27 fill=%27%23FBF6F2%27>É</text></svg>","sizes":"512x512","type":"image/svg+xml","purpose":"any maskable"}]}'>
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232D7A4F'/><text x='50' y='70' font-family='Georgia,serif' font-size='60' font-style='italic' text-anchor='middle' fill='%23F2F7F4'>É</text></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --cream:#F2F7F4;
+  --cream-2:#E6F0EA;
+  --rose:#A8D5B5;
+  --rose-soft:#D4EDD9;
+  --plum:#2D7A4F;
+  --plum-dark:#1F5C39;
+  --gold:#C9A961;
+  --charcoal:#1A2E22;
+  --muted:#5A7A65;
+  --green:#2D7A4F;
+  --red:#A84444;
+  --line:rgba(26,46,34,.08);
+  --shadow:0 1px 3px rgba(26,46,34,.06),0 8px 24px rgba(26,46,34,.04);
+  --shadow-lg:0 10px 40px rgba(26,46,34,.12);
+  --radius:14px;
+  --radius-sm:10px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow-x:hidden}
+body{
+  font-family:'Manrope',system-ui,sans-serif;
+  background:var(--cream);
+  color:var(--charcoal);
+  font-size:15px;
+  line-height:1.5;
+  padding-bottom:env(safe-area-inset-bottom);
+  padding-top:env(safe-area-inset-top);
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ===== HEADER ===== */
+.app-header{
+  background:linear-gradient(135deg,var(--plum) 0%,var(--plum-dark) 100%);
+  color:var(--cream);
+  padding:18px 20px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  z-index:50;
+  box-shadow:0 2px 12px rgba(45,36,36,.08);
+}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-logo{
+  width:44px;height:44px;border-radius:12px;
+  background:rgba(251,246,242,.12);
+  border:1px solid rgba(251,246,242,.18);
+  display:grid;place-items:center;
+  font-family:'Fraunces',serif;font-style:italic;font-size:26px;
+  color:var(--cream);
+}
+.brand-name{font-family:'Fraunces',serif;font-size:20px;font-weight:600;letter-spacing:.2px}
+.brand-sub{font-size:11px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase;font-weight:500}
+.header-date{text-align:right;font-size:12px;opacity:.85}
+.header-date strong{display:block;font-size:14px;font-weight:600;font-family:'Fraunces',serif}
+
+/* ===== TABS BAR (estilo POS) ===== */
+.tab-bar{
+  background:var(--cream-2);
+  padding:10px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  border-bottom:1px solid var(--line);
+}
+.tab-btn{
+  background:white;
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  padding:12px 6px 10px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+  cursor:pointer;
+  transition:all .2s ease;
+  color:var(--charcoal);
+  font-family:inherit;
+}
+.tab-btn:active{transform:scale(.96)}
+.tab-btn.active{
+  background:var(--plum);
+  color:var(--cream);
+  border-color:var(--plum);
+  box-shadow:0 4px 12px rgba(139,74,107,.25);
+}
+.tab-btn .icon{font-size:22px;line-height:1}
+.tab-btn .label{font-size:10.5px;font-weight:600;letter-spacing:.3px;text-transform:uppercase}
+
+/* ===== MAIN ===== */
+main{padding:18px 16px 32px;max-width:720px;margin:0 auto}
+.view{display:none;animation:fadeIn .3s ease}
+.view.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.view-title{
+  font-family:'Fraunces',serif;
+  font-size:26px;
+  font-weight:600;
+  margin-bottom:4px;
+  letter-spacing:-.3px;
+}
+.view-title em{font-style:italic;color:var(--plum);font-weight:500}
+.view-sub{color:var(--muted);font-size:13px;margin-bottom:20px}
+
+/* ===== CARDS ===== */
+.card{
+  background:white;
+  border-radius:var(--radius);
+  padding:18px;
+  box-shadow:var(--shadow);
+  margin-bottom:14px;
+  border:1px solid var(--line);
+}
+.card-title{
+  font-family:'Fraunces',serif;
+  font-size:15px;
+  font-weight:600;
+  margin-bottom:12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.card-title small{font-family:'Manrope';font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:1px}
+
+/* ===== DASHBOARD STATS ===== */
+.hero-card{
+  background:linear-gradient(135deg,var(--plum) 0%,var(--plum-dark) 100%);
+  color:var(--cream);
+  padding:24px 22px;
+  border:none;
+  position:relative;
+  overflow:hidden;
+}
+.hero-card::after{
+  content:'';position:absolute;right:-30px;top:-30px;
+  width:140px;height:140px;border-radius:50%;
+  background:radial-gradient(circle,rgba(201,169,97,.25),transparent 70%);
+}
+.hero-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;opacity:.75;margin-bottom:6px}
+.hero-value{font-family:'Fraunces',serif;font-size:38px;font-weight:600;letter-spacing:-1px}
+.hero-value .currency{font-size:18px;opacity:.7;font-weight:400;margin-right:4px}
+.hero-meta{display:flex;gap:18px;margin-top:14px;font-size:12px;opacity:.85}
+.hero-meta span strong{display:block;font-size:14px;font-family:'Fraunces',serif;opacity:1;margin-top:2px}
+
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat{
+  background:white;
+  padding:16px 14px;
+  border-radius:var(--radius-sm);
+  border:1px solid var(--line);
+  box-shadow:var(--shadow);
+}
+.stat-label{font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.stat-dot{width:6px;height:6px;border-radius:50%;background:var(--plum)}
+.stat-dot.green{background:var(--green)}
+.stat-dot.red{background:var(--red)}
+.stat-dot.gold{background:var(--gold)}
+.stat-value{font-family:'Fraunces',serif;font-size:22px;font-weight:600;letter-spacing:-.5px}
+.stat-value .currency{font-size:13px;opacity:.6;font-weight:400}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* ===== FORMS ===== */
+.form-row{margin-bottom:12px}
+.form-row label{
+  display:block;
+  font-size:11px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  color:var(--muted);
+  font-weight:600;
+  margin-bottom:6px;
+}
+.input,.select,.textarea{
+  width:100%;
+  padding:12px 14px;
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  font-family:inherit;
+  font-size:15px;
+  background:var(--cream);
+  color:var(--charcoal);
+  transition:border-color .15s, background .15s;
+  -webkit-appearance:none;
+}
+.input:focus,.select:focus,.textarea:focus{
+  outline:none;
+  border-color:var(--plum);
+  background:white;
+}
+.textarea{resize:vertical;min-height:70px;font-family:inherit}
+
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* Toggle pago em / método */
+.method-toggle{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+  background:var(--cream-2);padding:4px;border-radius:var(--radius-sm);
+}
+.method-toggle button{
+  background:transparent;border:none;padding:10px;border-radius:8px;
+  font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;
+  color:var(--muted);
+}
+.method-toggle button.active{background:white;color:var(--plum);box-shadow:0 1px 3px rgba(0,0,0,.06)}
+
+/* ===== BUTTONS ===== */
+.btn{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:var(--radius-sm);
+  font-family:'Manrope',sans-serif;
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition:all .15s ease;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-primary{background:var(--plum);color:var(--cream)}
+.btn-primary:active{background:var(--plum-dark);transform:scale(.98)}
+.btn-gold{background:var(--gold);color:white}
+.btn-ghost{background:var(--cream-2);color:var(--charcoal);border:1px solid var(--line)}
+.btn-danger{background:transparent;color:var(--red);border:1px solid var(--red)}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn-sm{padding:9px 12px;font-size:11px;letter-spacing:.3px}
+
+/* ===== LIST ITEMS ===== */
+.list{display:flex;flex-direction:column;gap:8px}
+.item{
+  background:white;
+  padding:14px 16px;
+  border-radius:var(--radius-sm);
+  border:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  gap:12px;
+  box-shadow:0 1px 2px rgba(0,0,0,.02);
+}
+.item-icon{
+  width:40px;height:40px;border-radius:10px;
+  display:grid;place-items:center;
+  background:var(--rose-soft);
+  color:var(--plum);
+  font-size:18px;
+  flex-shrink:0;
+}
+.item-icon.expense{background:#FCE5E5;color:var(--red)}
+.item-icon.income{background:#E0F0E5;color:var(--green)}
+.item-icon.mbway{background:#FFF1DC;color:#B07A1F}
+.item-body{flex:1;min-width:0}
+.item-title{font-weight:600;font-size:14px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item-meta{font-size:11.5px;color:var(--muted)}
+.item-amount{font-family:'Fraunces',serif;font-size:16px;font-weight:600;text-align:right;flex-shrink:0}
+.item-amount.income{color:var(--green)}
+.item-amount.expense{color:var(--red)}
+.item-actions{display:flex;gap:4px;margin-left:6px}
+.item-actions button{
+  background:transparent;border:none;width:30px;height:30px;border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;color:var(--muted);font-size:14px;
+}
+.item-actions button:active{background:var(--cream-2)}
+
+.empty{
+  text-align:center;padding:40px 20px;color:var(--muted);
+  font-family:'Fraunces',serif;font-style:italic;font-size:14px;
+}
+.empty-emoji{font-size:32px;display:block;margin-bottom:8px;opacity:.5}
+
+/* ===== CALENDÁRIO ===== */
+.cal-header{
+  display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;
+}
+.cal-month{font-family:'Fraunces',serif;font-size:20px;font-weight:600;text-transform:capitalize}
+.cal-nav{display:flex;gap:6px}
+.cal-nav button{
+  width:36px;height:36px;border:1px solid var(--line);background:white;
+  border-radius:10px;cursor:pointer;font-size:16px;color:var(--plum);
+}
+.cal-grid{
+  display:grid;grid-template-columns:repeat(7,1fr);gap:4px;
+}
+.cal-day-name{
+  text-align:center;font-size:10px;font-weight:700;letter-spacing:1px;
+  color:var(--muted);padding:6px 0;text-transform:uppercase;
+}
+.cal-day{
+  aspect-ratio:1;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:white;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:13px;font-weight:500;
+  cursor:pointer;position:relative;
+  transition:all .15s;
+}
+.cal-day:active{transform:scale(.95)}
+.cal-day.other{opacity:.3}
+.cal-day.today{background:var(--rose-soft);border-color:var(--plum);color:var(--plum);font-weight:700}
+.cal-day.has-event::after{
+  content:'';position:absolute;bottom:5px;
+  width:5px;height:5px;border-radius:50%;background:var(--gold);
+}
+.cal-day.selected{background:var(--plum);color:white;border-color:var(--plum)}
+.cal-day.selected.has-event::after{background:white}
+
+.appt-day-list{margin-top:18px}
+.appt-day-list h4{
+  font-family:'Fraunces',serif;font-size:15px;font-weight:600;margin-bottom:10px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.appt-day-list h4 span{font-family:'Manrope';font-size:11px;color:var(--muted);font-weight:500}
+
+.appt-card{
+  background:white;border:1px solid var(--line);border-radius:var(--radius-sm);
+  padding:12px 14px;margin-bottom:8px;display:flex;gap:12px;align-items:center;
+}
+.appt-time{
+  font-family:'Fraunces',serif;font-size:18px;font-weight:600;color:var(--plum);
+  min-width:54px;
+}
+.appt-info{flex:1;min-width:0}
+.appt-name{font-weight:600;font-size:14px}
+.appt-meta{font-size:12px;color:var(--muted);margin-top:2px}
+.appt-phone{font-family:'Manrope';font-size:12px;color:var(--plum-dark);font-weight:500}
+
+/* ===== SECTIONS ===== */
+.section-header{
+  display:flex;justify-content:space-between;align-items:flex-end;
+  margin:24px 0 12px;
+}
+.section-header h3{font-family:'Fraunces',serif;font-size:16px;font-weight:600}
+.section-header a{font-size:11px;color:var(--plum);font-weight:600;letter-spacing:.5px;text-transform:uppercase;cursor:pointer}
+
+/* ===== REPORT FILTERS ===== */
+.filter-row{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px}
+.chip{
+  padding:8px 14px;border:1px solid var(--line);border-radius:20px;
+  font-size:12px;font-weight:600;background:white;color:var(--muted);
+  cursor:pointer;white-space:nowrap;
+}
+.chip.active{background:var(--plum);color:white;border-color:var(--plum)}
+
+/* ===== TOAST ===== */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120%);
+  background:var(--charcoal);color:var(--cream);
+  padding:12px 20px;border-radius:30px;font-size:13px;font-weight:500;
+  box-shadow:var(--shadow-lg);z-index:1000;transition:transform .35s cubic-bezier(.2,.8,.2,1);
+  max-width:90vw;
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ===== MODAL ===== */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(45,36,36,.55);
+  display:none;align-items:flex-end;justify-content:center;z-index:200;
+  padding:0;backdrop-filter:blur(4px);
+}
+.modal-overlay.show{display:flex;animation:fadeIn .2s}
+.modal{
+  background:var(--cream);width:100%;max-width:520px;
+  border-radius:24px 24px 0 0;
+  padding:24px 20px 32px;
+  max-height:92vh;overflow-y:auto;
+  animation:slideUp .3s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{
+  width:42px;height:4px;background:var(--line);border-radius:2px;
+  margin:0 auto 18px;
+}
+.modal h3{font-family:'Fraunces',serif;font-size:20px;font-weight:600;margin-bottom:4px}
+.modal-sub{color:var(--muted);font-size:13px;margin-bottom:18px}
+
+/* ===== FLOATING ACTION ===== */
+.fab-stack{
+  position:fixed;bottom:20px;right:20px;
+  display:flex;flex-direction:column;gap:10px;z-index:40;
+}
+.fab{
+  width:56px;height:56px;border-radius:50%;
+  background:var(--plum);color:var(--cream);
+  border:none;font-size:24px;cursor:pointer;
+  box-shadow:0 6px 20px rgba(139,74,107,.4);
+  display:grid;place-items:center;
+}
+.fab:active{transform:scale(.92)}
+.fab.gold{background:var(--gold);box-shadow:0 6px 20px rgba(201,169,97,.4)}
+
+/* ===== BACKUP ===== */
+.backup-card{
+  background:linear-gradient(135deg,var(--cream-2),var(--rose-soft));
+  border:1px solid var(--rose);
+}
+.backup-card h3{font-family:'Fraunces',serif;font-size:17px;margin-bottom:6px}
+.backup-card p{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5}
+
+/* Detalhes ocultos */
+input[type=file]{display:none}
+hr.soft{border:none;border-top:1px solid var(--line);margin:18px 0}
+
+/* Tag */
+.tag{
+  display:inline-block;padding:2px 8px;font-size:10px;font-weight:700;
+  letter-spacing:.5px;text-transform:uppercase;border-radius:6px;
+  background:var(--cream-2);color:var(--muted);
+}
+.tag.cash{background:#E0F0E5;color:var(--green)}
+.tag.mbway{background:#FFF1DC;color:#B07A1F}
+
+/* Service badge */
+.service-pill{
+  display:inline-block;padding:3px 10px;background:var(--rose-soft);
+  color:var(--plum-dark);font-size:11px;font-weight:600;border-radius:12px;
+  margin-right:4px;margin-top:2px;
+}
+
+/* Cliente avatar */
+.client-avatar{
+  width:42px;height:42px;border-radius:50%;
+  background:linear-gradient(135deg,var(--rose),var(--rose-soft));
+  display:grid;place-items:center;font-family:'Fraunces',serif;
+  font-weight:600;color:var(--plum-dark);font-size:16px;flex-shrink:0;
+}
+</style>
+</head>
+<body>
+
+<div id="appRoot">
+
+<header class="app-header">
+  <div class="brand">
+    <div class="brand-logo">É</div>
+    <div>
+      <div class="brand-name">Salão Érika</div>
+      <div class="brand-sub">Gestão · Beleza</div>
+    </div>
+  </div>
+  <div class="header-date">
+    <strong id="hdrDate">—</strong>
+    <span id="hdrTime">—</span>
+  </div>
+</header>
+
+<nav class="tab-bar" id="tabBar">
+  <button class="tab-btn active" data-tab="dashboard"><span class="icon">◐</span><span class="label">Início</span></button>
+  <button class="tab-btn" data-tab="entradas"><span class="icon">＋</span><span class="label">Entradas</span></button>
+  <button class="tab-btn" data-tab="despesas"><span class="icon">－</span><span class="label">Saída</span></button>
+  <button class="tab-btn" data-tab="marcacoes"><span class="icon">▦</span><span class="label">Marcações</span></button>
+  <button class="tab-btn" data-tab="clientes"><span class="icon">♀</span><span class="label">Clientes</span></button>
+  <button class="tab-btn" data-tab="relatorios"><span class="icon">≡</span><span class="label">Relatórios</span></button>
+  <button class="tab-btn" data-tab="fecho"><span class="icon">✓</span><span class="label">Fecho</span></button>
+  <button class="tab-btn" data-tab="backup"><span class="icon">☁</span><span class="label">Backup</span></button>
+</nav>
+
+<main>
+
+  <!-- ===== DASHBOARD ===== -->
+  <section class="view active" id="view-dashboard">
+    <h2 class="view-title">Bem-vinda, <em>Érika</em></h2>
+    <p class="view-sub" id="dashSubtitle">—</p>
+
+    <div class="card hero-card">
+      <div class="hero-label">Saldo do mês</div>
+      <div class="hero-value"><span class="currency">€</span><span id="heroSaldo">0,00</span></div>
+      <div class="hero-meta">
+        <span>Entradas <strong id="heroEntradas">€0,00</strong></span>
+        <span>Despesas <strong id="heroDespesas">€0,00</strong></span>
+      </div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat">
+        <div class="stat-label"><span class="stat-dot green"></span>Dinheiro</div>
+        <div class="stat-value"><span class="currency">€</span><span id="statCash">0,00</span></div>
+        <div class="stat-sub">este mês</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label"><span class="stat-dot gold"></span>MB Way</div>
+        <div class="stat-value"><span class="currency">€</span><span id="statMb">0,00</span></div>
+        <div class="stat-sub">este mês</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label"><span class="stat-dot"></span>Hoje</div>
+        <div class="stat-value"><span class="currency">€</span><span id="statToday">0,00</span></div>
+        <div class="stat-sub" id="statTodayCount">0 movimentos</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label"><span class="stat-dot red"></span>Total geral</div>
+        <div class="stat-value"><span class="currency">€</span><span id="statTotal">0,00</span></div>
+        <div class="stat-sub">desde o início</div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <h3>Marcações de hoje</h3>
+      <a onclick="switchTab('marcacoes')">Ver todas →</a>
+    </div>
+    <div id="todayAppts"></div>
+
+    <div class="section-header">
+      <h3>Últimos movimentos</h3>
+      <a onclick="switchTab('relatorios')">Histórico →</a>
+    </div>
+    <div class="list" id="recentList"></div>
+  </section>
+
+  <!-- ===== ENTRADAS ===== -->
+  <section class="view" id="view-entradas">
+    <h2 class="view-title">Registar <em>entrada</em></h2>
+    <p class="view-sub">Adicione uma entrada de dinheiro ou MB Way</p>
+
+    <div class="card">
+      <div class="form-row">
+        <label>Método de pagamento</label>
+        <div class="method-toggle" data-target="entryMethod">
+          <button type="button" class="active" data-val="dinheiro">💵 Dinheiro</button>
+          <button type="button" data-val="mbway">📱 MB Way</button>
+        </div>
+        <input type="hidden" id="entryMethod" value="dinheiro">
+      </div>
+
+      <div class="form-row">
+        <label>Valor (€)</label>
+        <input class="input" type="number" id="entryAmount" step="0.01" placeholder="0,00" inputmode="decimal">
+      </div>
+
+      <div class="form-row">
+        <label>Descrição do serviço</label>
+        <input class="input" id="entryDesc" placeholder="Ex: Corte + Brushing">
+      </div>
+
+      <div class="form-row">
+        <label>Cliente (opcional)</label>
+        <input class="input" id="entryClient" placeholder="Nome do cliente" list="clientList">
+        <datalist id="clientList"></datalist>
+      </div>
+
+      <div class="form-row-2">
+        <div class="form-row">
+          <label>Data</label>
+          <input class="input" type="date" id="entryDate">
+        </div>
+        <div class="form-row">
+          <label>Hora</label>
+          <input class="input" type="time" id="entryTime">
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="addEntry()">＋ Adicionar entrada</button>
+    </div>
+
+    <h3 style="font-family:'Fraunces',serif;font-size:16px;margin:18px 0 10px">Entradas recentes</h3>
+    <div class="list" id="entriesList"></div>
+  </section>
+
+  <!-- ===== DESPESAS ===== -->
+  <section class="view" id="view-despesas">
+    <h2 class="view-title">Registar <em>despesa</em></h2>
+    <p class="view-sub">Saídas, gastos e despesas do salão</p>
+
+    <div class="card">
+      <div class="form-row">
+        <label>Método de pagamento</label>
+        <div class="method-toggle" data-target="expMethod">
+          <button type="button" class="active" data-val="dinheiro">💵 Dinheiro</button>
+          <button type="button" data-val="mbway">📱 MB Way</button>
+        </div>
+        <input type="hidden" id="expMethod" value="dinheiro">
+      </div>
+
+      <div class="form-row">
+        <label>Valor (€)</label>
+        <input class="input" type="number" id="expAmount" step="0.01" placeholder="0,00" inputmode="decimal">
+      </div>
+
+      <div class="form-row">
+        <label>Descrição</label>
+        <input class="input" id="expDesc" placeholder="Ex: Produtos de cabelo">
+      </div>
+
+      <div class="form-row">
+        <label>Categoria</label>
+        <select class="select" id="expCategory">
+          <option value="Produtos">Produtos</option>
+          <option value="Materiais">Materiais</option>
+          <option value="Renda">Renda</option>
+          <option value="Água/Luz">Água / Luz</option>
+          <option value="Salários">Salários</option>
+          <option value="Marketing">Marketing</option>
+          <option value="Manutenção">Manutenção</option>
+          <option value="Outros">Outros</option>
+        </select>
+      </div>
+
+      <div class="form-row-2">
+        <div class="form-row">
+          <label>Data</label>
+          <input class="input" type="date" id="expDate">
+        </div>
+        <div class="form-row">
+          <label>Hora</label>
+          <input class="input" type="time" id="expTime">
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="addExpense()">－ Adicionar despesa</button>
+    </div>
+
+    <h3 style="font-family:'Fraunces',serif;font-size:16px;margin:18px 0 10px">Despesas recentes</h3>
+    <div class="list" id="expensesList"></div>
+  </section>
+
+  <!-- ===== MARCAÇÕES ===== -->
+  <section class="view" id="view-marcacoes">
+    <h2 class="view-title">Agenda de <em>marcações</em></h2>
+    <p class="view-sub">Toque num dia para ver ou adicionar marcações</p>
+
+    <div class="card">
+      <div class="cal-header">
+        <div class="cal-month" id="calMonth">—</div>
+        <div class="cal-nav">
+          <button onclick="changeMonth(-1)">‹</button>
+          <button onclick="changeMonth(0)">○</button>
+          <button onclick="changeMonth(1)">›</button>
+        </div>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+
+    <div class="appt-day-list">
+      <h4>Marcações <span id="apptDayLabel">—</span></h4>
+      <div id="apptDayList"></div>
+      <button class="btn btn-gold" style="margin-top:10px" onclick="openApptModal()">＋ Nova marcação</button>
+    </div>
+  </section>
+
+  <!-- ===== CLIENTES ===== -->
+  <section class="view" id="view-clientes">
+    <h2 class="view-title">Os meus <em>clientes</em></h2>
+    <p class="view-sub">Lista de clientes e contactos</p>
+
+    <div class="card">
+      <input class="input" id="clientSearch" placeholder="🔍 Procurar cliente..." oninput="renderClients()">
+    </div>
+
+    <div class="list" id="clientsList"></div>
+
+    <button class="fab" onclick="openClientModal()" style="margin-top:18px;position:relative;right:auto;bottom:auto;width:100%;height:auto;padding:14px;border-radius:var(--radius-sm);font-size:14px;text-transform:uppercase;letter-spacing:1px;font-weight:600">＋ Adicionar cliente</button>
+  </section>
+
+  <!-- ===== RELATÓRIOS ===== -->
+  <section class="view" id="view-relatorios">
+    <h2 class="view-title">Relatórios e <em>histórico</em></h2>
+    <p class="view-sub">Consultar todos os movimentos</p>
+
+    <div class="filter-row">
+      <button class="chip active" data-filter="all">Tudo</button>
+      <button class="chip" data-filter="income">Entradas</button>
+      <button class="chip" data-filter="expense">Despesas</button>
+      <button class="chip" data-filter="dinheiro">Dinheiro</button>
+      <button class="chip" data-filter="mbway">MB Way</button>
+    </div>
+
+    <div class="filter-row">
+      <button class="chip active" data-period="month">Este mês</button>
+      <button class="chip" data-period="today">Hoje</button>
+      <button class="chip" data-period="week">7 dias</button>
+      <button class="chip" data-period="all">Tudo</button>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat">
+        <div class="stat-label"><span class="stat-dot green"></span>Entradas</div>
+        <div class="stat-value"><span class="currency">€</span><span id="repIn">0,00</span></div>
+      </div>
+      <div class="stat">
+        <div class="stat-label"><span class="stat-dot red"></span>Despesas</div>
+        <div class="stat-value"><span class="currency">€</span><span id="repOut">0,00</span></div>
+      </div>
+    </div>
+
+    <div class="list" id="repList"></div>
+  </section>
+
+  <!-- ===== FECHO ===== -->
+  <section class="view" id="view-fecho">
+    <h2 class="view-title">Fecho <em>de caixa</em></h2>
+    <p class="view-sub">Resumo diário e mensal de movimentos</p>
+
+    <div class="card">
+      <div class="card-title">Fecho diário <small id="fechoDayDate">hoje</small></div>
+      <input class="input" type="date" id="fechoDay" onchange="renderFecho()" style="margin-bottom:14px">
+
+      <div class="stat-grid">
+        <div class="stat">
+          <div class="stat-label"><span class="stat-dot green"></span>Entradas dinheiro</div>
+          <div class="stat-value"><span class="currency">€</span><span id="fdInCash">0,00</span></div>
+        </div>
+        <div class="stat">
+          <div class="stat-label"><span class="stat-dot gold"></span>Entradas MB Way</div>
+          <div class="stat-value"><span class="currency">€</span><span id="fdInMb">0,00</span></div>
+        </div>
+        <div class="stat">
+          <div class="stat-label"><span class="stat-dot red"></span>Despesas dinheiro</div>
+          <div class="stat-value"><span class="currency">€</span><span id="fdOutCash">0,00</span></div>
+        </div>
+        <div class="stat">
+          <div class="stat-label"><span class="stat-dot red"></span>Despesas MB Way</div>
+          <div class="stat-value"><span class="currency">€</span><span id="fdOutMb">0,00</span></div>
+        </div>
+      </div>
+
+      <hr class="soft">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <span style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:600">Saldo do dia</span>
+        <span class="hero-value" style="font-size:26px;color:var(--plum)"><span class="currency">€</span><span id="fdSaldo">0,00</span></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Fecho mensal</div>
+      <input class="input" type="month" id="fechoMonth" onchange="renderFecho()" style="margin-bottom:14px">
+
+      <div class="stat-grid">
+        <div class="stat">
+          <div class="stat-label"><span class="stat-dot green"></span>Entradas dinheiro</div>
+          <div class="stat-value"><span class="currency">€</span><span id="fmInCash">0,00</span></div>
+        </div>
+        <div class="stat">
+          <div class="stat-label"><span class="stat-dot gold"></span>Entradas MB Way</div>
+          <div class="stat-value"><span class="currency">€</span><span id="fmInMb">0,00</span></div>
+        </div>
+        <div class="stat">
+          <div class="stat-label"><span class="stat-dot red"></span>Despesas dinheiro</div>
+          <div class="stat-value"><span class="currency">€</span><span id="fmOutCash">0,00</span></div>
+        </div>
+        <div class="stat">
+          <div class="stat-label"><span class="stat-dot red"></span>Despesas MB Way</div>
+          <div class="stat-value"><span class="currency">€</span><span id="fmOutMb">0,00</span></div>
+        </div>
+      </div>
+
+      <hr class="soft">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <span style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:600">Saldo do mês</span>
+        <span class="hero-value" style="font-size:26px;color:var(--plum)"><span class="currency">€</span><span id="fmSaldo">0,00</span></span>
+      </div>
+
+      <button class="btn btn-ghost" style="margin-top:14px" onclick="exportMonthReport()">📄 Exportar relatório do mês</button>
+    </div>
+  </section>
+
+  <!-- ===== BACKUP ===== -->
+  <section class="view" id="view-backup">
+    <h2 class="view-title">Backup e <em>dados</em></h2>
+    <p class="view-sub">Guarde os seus dados em segurança</p>
+
+    <div class="card backup-card">
+      <h3>☁ Guardar no Google Drive</h3>
+      <p>Exporte um ficheiro de backup e guarde-o no seu Google Drive. Pode importar a qualquer momento noutro dispositivo.</p>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="exportBackup()">⬇ Exportar</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('importFile').click()">⬆ Importar</button>
+      </div>
+      <input type="file" id="importFile" accept=".json" onchange="importBackup(event)">
+    </div>
+
+    <div class="card">
+      <div class="card-title">Como guardar no Drive</div>
+      <ol style="padding-left:20px;font-size:13px;color:var(--muted);line-height:1.8">
+        <li>Toque em <strong>Exportar</strong> — vai descarregar um ficheiro <code>.json</code>.</li>
+        <li>Abra a aplicação <strong>Google Drive</strong> no telemóvel.</li>
+        <li>Toque em <strong>＋</strong> → <strong>Carregar</strong> → escolha o ficheiro.</li>
+        <li>Para repor os dados: toque em <strong>Importar</strong> e selecione o ficheiro do Drive.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Dados guardados</div>
+      <div class="stat-grid">
+        <div class="stat">
+          <div class="stat-label"><span class="stat-dot"></span>Movimentos</div>
+          <div class="stat-value" id="cntTx">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label"><span class="stat-dot gold"></span>Marcações</div>
+          <div class="stat-value" id="cntAppt">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label"><span class="stat-dot green"></span>Clientes</div>
+          <div class="stat-value" id="cntCli">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label"><span class="stat-dot red"></span>Tamanho</div>
+          <div class="stat-value" id="cntSize">0 KB</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">☁ Sincronização</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Os seus dados estão sincronizados na cloud. Entre com a mesma conta noutro dispositivo para ver tudo atualizado.</p>
+      <button class="btn btn-ghost" onclick="window.fbLogout && window.fbLogout()" style="border:1px solid var(--plum);color:var(--plum)">🔓 Terminar sessão</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title" style="color:var(--red)">Zona de perigo</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Apaga todos os dados deste dispositivo. Faça backup antes!</p>
+      <button class="btn btn-danger" onclick="confirmReset()">🗑 Apagar todos os dados</button>
+    </div>
+
+    <p style="text-align:center;font-family:'Fraunces',serif;font-style:italic;color:var(--muted);font-size:12px;margin-top:24px">
+      Salão Érika · v2.0 · sincronizado
+    </p>
+  </section>
+</main>
+
+<!-- Modal Marcação -->
+<div class="modal-overlay" id="apptModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3 id="apptModalTitle">Nova marcação</h3>
+    <p class="modal-sub">Preencha os dados da marcação</p>
+
+    <div class="form-row">
+      <label>Nome do cliente</label>
+      <input class="input" id="apptName" placeholder="Nome completo" list="clientListModal">
+      <datalist id="clientListModal"></datalist>
+    </div>
+    <div class="form-row">
+      <label>Número de telefone</label>
+      <input class="input" type="tel" id="apptPhone" placeholder="9XX XXX XXX" inputmode="tel">
+    </div>
+    <div class="form-row">
+      <label>Serviço</label>
+      <input class="input" id="apptService" placeholder="Ex: Corte + Coloração">
+    </div>
+    <div class="form-row-2">
+      <div class="form-row">
+        <label>Data</label>
+        <input class="input" type="date" id="apptDate">
+      </div>
+      <div class="form-row">
+        <label>Hora</label>
+        <input class="input" type="time" id="apptTime">
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Notas (opcional)</label>
+      <textarea class="textarea" id="apptNotes" placeholder="Observações..."></textarea>
+    </div>
+    <div class="form-row">
+      <label>Lembrete</label>
+      <select class="select" id="apptReminder">
+        <option value="0">Sem lembrete</option>
+        <option value="15">15 min antes</option>
+        <option value="30" selected>30 min antes</option>
+        <option value="60">1 hora antes</option>
+        <option value="120">2 horas antes</option>
+        <option value="1440">1 dia antes</option>
+      </select>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeApptModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveAppt()">Guardar</button>
+    </div>
+    <button class="btn btn-danger" id="apptDeleteBtn" style="margin-top:10px;display:none" onclick="deleteCurrentAppt()">🗑 Eliminar marcação</button>
+  </div>
+</div>
+
+<!-- Modal Cliente -->
+<div class="modal-overlay" id="clientModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3 id="clientModalTitle">Novo cliente</h3>
+    <p class="modal-sub">Adicione um cliente à sua lista</p>
+
+    <div class="form-row">
+      <label>Nome completo</label>
+      <input class="input" id="cliName" placeholder="Nome">
+    </div>
+    <div class="form-row">
+      <label>Telefone</label>
+      <input class="input" type="tel" id="cliPhone" placeholder="9XX XXX XXX" inputmode="tel">
+    </div>
+    <div class="form-row">
+      <label>Email (opcional)</label>
+      <input class="input" type="email" id="cliEmail" placeholder="email@exemplo.com">
+    </div>
+    <div class="form-row">
+      <label>Notas</label>
+      <textarea class="textarea" id="cliNotes" placeholder="Preferências, alergias, etc."></textarea>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeClientModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveClient()">Guardar</button>
+    </div>
+    <button class="btn btn-danger" id="cliDeleteBtn" style="margin-top:10px;display:none" onclick="deleteCurrentClient()">🗑 Eliminar cliente</button>
+    <button class="btn" id="cliAnamneseBtn" style="margin-top:10px;background:var(--cream-2);color:var(--plum);border:1.5px solid var(--plum);display:none" onclick="openAnamneseFromClient()">📋 Ficha de Anamnese</button>
+  </div>
+</div>
+
+<!-- Modal Anamnese -->
+<div class="modal-overlay" id="anamneseModal">
+  <div class="modal" style="max-height:95vh">
+    <div class="modal-handle"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <h3 id="anamneseModalTitle" style="font-size:18px">Ficha de Anamnese</h3>
+      <span style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:600">Procedimento Capilar</span>
+    </div>
+    <p class="modal-sub" id="anamneseClientName" style="color:var(--plum);font-weight:600">—</p>
+
+    <div style="background:var(--cream-2);border-radius:10px;padding:12px 14px;margin-bottom:14px;border-left:3px solid var(--plum)">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:var(--muted);margin-bottom:8px">Dados pessoais</div>
+      <div class="form-row-2">
+        <div class="form-row" style="margin-bottom:8px">
+          <label>Data Nasc.</label>
+          <input class="input" type="date" id="anDtNasc">
+        </div>
+        <div class="form-row" style="margin-bottom:8px">
+          <label>Ocupação</label>
+          <input class="input" id="anOcupacao" placeholder="Profissão">
+        </div>
+      </div>
+    </div>
+
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:var(--muted);margin-bottom:10px">Historial capilar</div>
+
+    <div class="form-row">
+      <label>Realizou procedimento capilar nos últimos 3 meses?</label>
+      <div class="method-toggle" data-target="anProcRecente" style="grid-template-columns:1fr 1fr">
+        <button type="button" class="active" data-val="nao">Não</button>
+        <button type="button" data-val="sim">Sim</button>
+      </div>
+      <input type="hidden" id="anProcRecente" value="nao">
+      <input class="input" id="anProcRecenteSpec" placeholder="Especifique..." style="margin-top:8px">
+    </div>
+
+    <div class="form-row">
+      <label>Realiza hidratação ou reconstrução com frequência?</label>
+      <div class="method-toggle" data-target="anHidratacao" style="grid-template-columns:1fr 1fr">
+        <button type="button" class="active" data-val="nao">Não</button>
+        <button type="button" data-val="sim">Sim</button>
+      </div>
+      <input type="hidden" id="anHidratacao" value="nao">
+      <input class="input" id="anHidratacaoSpec" placeholder="Especifique..." style="margin-top:8px">
+    </div>
+
+    <div class="form-row">
+      <label>Usa ferramentas de calor (secador, chapinha, modelador)?</label>
+      <div class="method-toggle" data-target="anCalor" style="grid-template-columns:1fr 1fr">
+        <button type="button" class="active" data-val="nao">Não</button>
+        <button type="button" data-val="sim">Sim</button>
+      </div>
+      <input type="hidden" id="anCalor" value="nao">
+      <input class="input" id="anCalorSpec" placeholder="Especifique..." style="margin-top:8px">
+    </div>
+
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:var(--muted);margin:14px 0 10px">Patologias e saúde</div>
+
+    <div class="form-row">
+      <label>Patologia identificada no couro cabeludo / haste</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px" id="anPatologiasGrid">
+        <label style="text-transform:none;letter-spacing:0;font-size:13px;color:var(--charcoal);display:flex;align-items:center;gap:8px;background:var(--cream-2);padding:8px 10px;border-radius:8px;cursor:pointer">
+          <input type="checkbox" id="anPatDermatite" style="accent-color:var(--plum)"> Dermatite
+        </label>
+        <label style="text-transform:none;letter-spacing:0;font-size:13px;color:var(--charcoal);display:flex;align-items:center;gap:8px;background:var(--cream-2);padding:8px 10px;border-radius:8px;cursor:pointer">
+          <input type="checkbox" id="anPatQueda" style="accent-color:var(--plum)"> Queda de cabelo
+        </label>
+        <label style="text-transform:none;letter-spacing:0;font-size:13px;color:var(--charcoal);display:flex;align-items:center;gap:8px;background:var(--cream-2);padding:8px 10px;border-radius:8px;cursor:pointer">
+          <input type="checkbox" id="anPatQuebra" style="accent-color:var(--plum)"> Quebra
+        </label>
+        <label style="text-transform:none;letter-spacing:0;font-size:13px;color:var(--charcoal);display:flex;align-items:center;gap:8px;background:var(--cream-2);padding:8px 10px;border-radius:8px;cursor:pointer">
+          <input type="checkbox" id="anPatPontas" style="accent-color:var(--plum)"> Pontas duplas
+        </label>
+        <label style="text-transform:none;letter-spacing:0;font-size:13px;color:var(--charcoal);display:flex;align-items:center;gap:8px;background:var(--cream-2);padding:8px 10px;border-radius:8px;cursor:pointer">
+          <input type="checkbox" id="anPatNos" style="accent-color:var(--plum)"> Nós
+        </label>
+        <label style="text-transform:none;letter-spacing:0;font-size:13px;color:var(--charcoal);display:flex;align-items:center;gap:8px;background:var(--cream-2);padding:8px 10px;border-radius:8px;cursor:pointer">
+          <input type="checkbox" id="anPatRarefacao" style="accent-color:var(--plum)"> Rarefação
+        </label>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label>Possui algum tipo de doença?</label>
+      <div class="method-toggle" data-target="anDoenca" style="grid-template-columns:1fr 1fr">
+        <button type="button" class="active" data-val="nao">Não</button>
+        <button type="button" data-val="sim">Sim</button>
+      </div>
+      <input type="hidden" id="anDoenca" value="nao">
+      <input class="input" id="anDoencaSpec" placeholder="Especifique..." style="margin-top:8px">
+    </div>
+
+    <div class="form-row">
+      <label>Está gestante ou a amamentar?</label>
+      <div class="method-toggle" data-target="anGestante" style="grid-template-columns:1fr 1fr">
+        <button type="button" class="active" data-val="nao">Não</button>
+        <button type="button" data-val="sim">Sim</button>
+      </div>
+      <input type="hidden" id="anGestante" value="nao">
+      <input class="input" id="anGestanteMeses" placeholder="Quantos meses?" style="margin-top:8px">
+    </div>
+
+    <div class="form-row">
+      <label>Alergia a algum componente químico?</label>
+      <div class="method-toggle" data-target="anAlergia" style="grid-template-columns:1fr 1fr">
+        <button type="button" class="active" data-val="nao">Não</button>
+        <button type="button" data-val="sim">Sim</button>
+      </div>
+      <input type="hidden" id="anAlergia" value="nao">
+      <input class="input" id="anAlergiaSpec" placeholder="Especifique..." style="margin-top:8px">
+    </div>
+
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:var(--muted);margin:14px 0 10px">Tipo de cabelo</div>
+
+    <div class="form-row">
+      <label>Tipo</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <label style="text-transform:none;letter-spacing:0;font-size:13px;color:var(--charcoal);display:flex;align-items:center;gap:8px;background:var(--cream-2);padding:8px 10px;border-radius:8px;cursor:pointer">
+          <input type="radio" name="anTipoCabelo" value="1-liso" id="anTipo1" style="accent-color:var(--plum)"> 1 · Liso
+        </label>
+        <label style="text-transform:none;letter-spacing:0;font-size:13px;color:var(--charcoal);display:flex;align-items:center;gap:8px;background:var(--cream-2);padding:8px 10px;border-radius:8px;cursor:pointer">
+          <input type="radio" name="anTipoCabelo" value="2-ondulado" id="anTipo2" style="accent-color:var(--plum)"> 2 · Ondulado
+        </label>
+        <label style="text-transform:none;letter-spacing:0;font-size:13px;color:var(--charcoal);display:flex;align-items:center;gap:8px;background:var(--cream-2);padding:8px 10px;border-radius:8px;cursor:pointer">
+          <input type="radio" name="anTipoCabelo" value="3-cacheado" id="anTipo3" style="accent-color:var(--plum)"> 3 · Cacheado
+        </label>
+        <label style="text-transform:none;letter-spacing:0;font-size:13px;color:var(--charcoal);display:flex;align-items:center;gap:8px;background:var(--cream-2);padding:8px 10px;border-radius:8px;cursor:pointer">
+          <input type="radio" name="anTipoCabelo" value="4-crespo" id="anTipo4" style="accent-color:var(--plum)"> 4 · Crespo
+        </label>
+      </div>
+    </div>
+
+    <div class="form-row-2">
+      <div class="form-row">
+        <label>Subtipo</label>
+        <select class="select" id="anSubtipo">
+          <option value="">—</option>
+          <option>A</option><option>B</option><option>C</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Cor natural?</label>
+        <div class="method-toggle" data-target="anCorNatural" style="grid-template-columns:1fr 1fr">
+          <button type="button" class="active" data-val="sim">Sim</button>
+          <button type="button" data-val="nao">Não</button>
+        </div>
+        <input type="hidden" id="anCorNatural" value="sim">
+      </div>
+    </div>
+
+    <div class="form-row-2">
+      <div class="form-row">
+        <label>Característica</label>
+        <select class="select" id="anCaracteristica">
+          <option value="">—</option>
+          <option>Normal</option><option>Seco</option><option>Oleoso</option><option>Misto</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Densidade</label>
+        <select class="select" id="anDensidade">
+          <option value="">—</option>
+          <option>Alta</option><option>Média</option><option>Baixa</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label>Textura</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+        <label style="text-transform:none;letter-spacing:0;font-size:13px;color:var(--charcoal);display:flex;align-items:center;gap:6px;background:var(--cream-2);padding:8px 10px;border-radius:8px;cursor:pointer">
+          <input type="radio" name="anTextura" value="fino" style="accent-color:var(--plum)"> Fino
+        </label>
+        <label style="text-transform:none;letter-spacing:0;font-size:13px;color:var(--charcoal);display:flex;align-items:center;gap:6px;background:var(--cream-2);padding:8px 10px;border-radius:8px;cursor:pointer">
+          <input type="radio" name="anTextura" value="medio" style="accent-color:var(--plum)"> Médio
+        </label>
+        <label style="text-transform:none;letter-spacing:0;font-size:13px;color:var(--charcoal);display:flex;align-items:center;gap:6px;background:var(--cream-2);padding:8px 10px;border-radius:8px;cursor:pointer">
+          <input type="radio" name="anTextura" value="grosso" style="accent-color:var(--plum)"> Grosso
+        </label>
+      </div>
+    </div>
+
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:var(--muted);margin:14px 0 10px">Procedimento</div>
+
+    <div class="form-row">
+      <label>Procedimento realizado</label>
+      <input class="input" id="anProcedimento" placeholder="Ex: Progressiva, Botox...">
+    </div>
+    <div class="form-row-2">
+      <div class="form-row">
+        <label>Produto utilizado</label>
+        <input class="input" id="anProduto" placeholder="Nome do produto">
+      </div>
+      <div class="form-row">
+        <label>Gramas / ML</label>
+        <input class="input" id="anGramas" placeholder="Ex: 100g">
+      </div>
+    </div>
+    <div class="form-row-2">
+      <div class="form-row">
+        <label>Retoque de raiz?</label>
+        <div class="method-toggle" data-target="anRetoque" style="grid-template-columns:1fr 1fr">
+          <button type="button" class="active" data-val="nao">Não</button>
+          <button type="button" data-val="sim">Sim</button>
+        </div>
+        <input type="hidden" id="anRetoque" value="nao">
+      </div>
+      <div class="form-row">
+        <label>Cabelo inteiro?</label>
+        <div class="method-toggle" data-target="anInteiroToggle" style="grid-template-columns:1fr 1fr">
+          <button type="button" class="active" data-val="nao">Não</button>
+          <button type="button" data-val="sim">Sim</button>
+        </div>
+        <input type="hidden" id="anInteiroToggle" value="nao">
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Finalização (tratamentos)</label>
+      <input class="input" id="anFinalizacao" placeholder="Ex: Máscara hidratante">
+    </div>
+    <div class="form-row">
+      <label>Home care indicado</label>
+      <input class="input" id="anHomeCare" placeholder="Ex: Shampoo + condicionador">
+    </div>
+
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:var(--muted);margin:14px 0 10px">Teste de mechas</div>
+    <div style="border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:14px">
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr 2fr;background:var(--cream-2);font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);padding:8px 10px;gap:6px">
+        <span>Química</span><span>Tempo</span><span>Data</span><span>Resultado</span>
+      </div>
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr 2fr;padding:8px 10px;gap:6px;border-top:1px solid var(--line)">
+        <input class="input" id="anMecha1Quimica" placeholder="1ª mecha" style="padding:6px 8px;font-size:12px">
+        <input class="input" id="anMecha1Tempo" placeholder="min" style="padding:6px 8px;font-size:12px">
+        <input class="input" type="date" id="anMecha1Data" style="padding:6px 8px;font-size:12px">
+        <input class="input" id="anMecha1Resultado" placeholder="Resultado" style="padding:6px 8px;font-size:12px">
+      </div>
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr 2fr;padding:8px 10px;gap:6px;border-top:1px solid var(--line)">
+        <input class="input" id="anMecha2Quimica" placeholder="2ª mecha" style="padding:6px 8px;font-size:12px">
+        <input class="input" id="anMecha2Tempo" placeholder="min" style="padding:6px 8px;font-size:12px">
+        <input class="input" type="date" id="anMecha2Data" style="padding:6px 8px;font-size:12px">
+        <input class="input" id="anMecha2Resultado" placeholder="Resultado" style="padding:6px 8px;font-size:12px">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label>Data da ficha</label>
+      <input class="input" type="date" id="anData">
+    </div>
+
+    <!-- ASSINATURA -->
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:var(--muted);margin:18px 0 10px">✍️ Assinatura da cliente</div>
+    <div style="background:var(--cream-2);border-radius:12px;padding:12px;border:1.5px dashed var(--plum);margin-bottom:6px">
+      <p style="font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:10px">
+        Declaro que as informações acima são verdadeiras, não cabendo ao profissional qualquer responsabilidade por informações omitidas nesta avaliação.
+      </p>
+      <div style="position:relative;border-radius:10px;overflow:hidden;background:white;border:1px solid var(--line)">
+        <canvas id="signatureCanvas" style="display:block;width:100%;height:160px;cursor:crosshair;touch-action:none"></canvas>
+        <div id="signaturePlaceholder" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;gap:6px">
+          <span style="font-size:28px;opacity:.18">✍️</span>
+          <span style="font-size:12px;color:var(--muted);opacity:.6;font-family:'Fraunces',serif;font-style:italic">Assine aqui com o dedo ou caneta</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button type="button" onclick="clearSignature()" class="btn btn-ghost btn-sm" style="flex:1;padding:9px">🗑 Limpar</button>
+        <div id="signatureStatus" style="flex:2;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted);font-style:italic">Sem assinatura</div>
+      </div>
+    </div>
+
+    <div class="btn-row" style="margin-top:14px">
+      <button class="btn btn-ghost" onclick="closeAnamneseModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveAnamnese()">💾 Guardar ficha</button>
+    </div>
+    <button class="btn" style="margin-top:10px;background:#1a1a1a;color:white;gap:8px" onclick="exportAnamnесePDF()">📄 Baixar PDF da ficha assinada</button>
+  </div>
+</div>
+
+</div><!-- /#appRoot -->
+
+<div class="toast" id="toast"></div>
+
+<!-- ===== ECRÃ DE LOGIN (sincronização Firebase) ===== -->
+<div id="loginScreen" style="display:none;position:fixed;inset:0;background:#2D7A4F;z-index:99999;flex-direction:column;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif">
+  <div style="background:#fff;border-radius:18px;padding:34px 26px;width:100%;max-width:360px;box-shadow:0 12px 40px rgba(0,0,0,.25)">
+    <div style="text-align:center;margin-bottom:22px">
+      <div style="font-family:Georgia,serif;font-style:italic;font-size:52px;color:#2D7A4F;line-height:1">É</div>
+      <div style="font-size:22px;font-weight:700;color:#2D7A4F;margin-top:6px">Salão Érika</div>
+      <div style="color:#888;font-size:14px;margin-top:2px">Entrar na sua conta</div>
+    </div>
+    <input type="email" id="loginEmail" placeholder="Email" autocomplete="email" style="width:100%;box-sizing:border-box;padding:14px;border:1.5px solid #ddd;border-radius:11px;font-size:16px;margin-bottom:11px">
+    <input type="password" id="loginPass" placeholder="Palavra-passe" autocomplete="current-password" style="width:100%;box-sizing:border-box;padding:14px;border:1.5px solid #ddd;border-radius:11px;font-size:16px;margin-bottom:14px">
+    <button id="loginBtn" style="width:100%;padding:15px;background:#2D7A4F;color:#fff;border:none;border-radius:11px;font-size:16px;font-weight:600;cursor:pointer">Entrar</button>
+    <div id="loginError" style="color:#c0392b;font-size:14px;text-align:center;min-height:20px;margin-top:12px"></div>
+  </div>
+  <div style="color:rgba(255,255,255,.65);font-size:12px;margin-top:22px">dados sincronizados na cloud · seguro</div>
+</div>
+
+<!-- Esconde a app enquanto não há sessão -->
+<style>body:not(.is-authed) #appRoot{display:none!important}</style>
+
+<script type="module">
+/* ===== INTEGRAÇÃO FIREBASE ===== */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, onSnapshot, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDnrXOGM6fXd110utHsLxWaJhwZEB5G-FM",
+  authDomain: "salaoerika-2d526.firebaseapp.com",
+  projectId: "salaoerika-2d526",
+  storageBucket: "salaoerika-2d526.firebasestorage.app",
+  messagingSenderId: "429034917079",
+  appId: "1:429034917079:web:88bb7932ebadca58d2b492",
+  measurementId: "G-GTEQ5R1T94"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const fbDb = getFirestore(fbApp);
+const fbAuth = getAuth(fbApp);
+enableIndexedDbPersistence(fbDb).catch(()=>{});
+setPersistence(fbAuth, browserLocalPersistence).catch(()=>{});
+
+// Estado global da ligação (usado pelo código da app mais abaixo)
+window.FB = {
+  db: fbDb, auth: fbAuth, uid: null, ready: false,
+  doc: () => doc(fbDb, "utilizadores", window.FB.uid, "dados", "principal"),
+  getDoc, setDoc, onSnapshot
+};
+
+// Login
+const loginScreen = document.getElementById('loginScreen');
+const loginBtn = document.getElementById('loginBtn');
+const loginError = document.getElementById('loginError');
+
+function showLogin(){ loginScreen.style.display='flex'; document.body.classList.remove('is-authed'); }
+function hideLogin(){ loginScreen.style.display='none'; document.body.classList.add('is-authed'); }
+
+loginBtn.addEventListener('click', async ()=>{
+  loginError.textContent='';
+  loginBtn.disabled=true; loginBtn.textContent='A entrar…';
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPass').value;
+  try{
+    await signInWithEmailAndPassword(fbAuth, email, pass);
+  }catch(err){
+    const msgs={'auth/invalid-email':'Email inválido.','auth/user-not-found':'Conta não encontrada.','auth/wrong-password':'Palavra-passe incorreta.','auth/invalid-credential':'Email ou palavra-passe incorretos.','auth/network-request-failed':'Sem ligação à internet.','auth/too-many-requests':'Demasiadas tentativas. Aguarde.'};
+    loginError.textContent = msgs[err.code] || ('Erro: '+err.code);
+  }finally{
+    loginBtn.disabled=false; loginBtn.textContent='Entrar';
+  }
+});
+document.getElementById('loginPass').addEventListener('keydown', e=>{ if(e.key==='Enter') loginBtn.click(); });
+
+onAuthStateChanged(fbAuth, (user)=>{
+  if(user){
+    window.FB.uid = user.uid;
+    window.FB.ready = true;
+    hideLogin();
+    // Avisa a app que pode arrancar e sincronizar
+    window.dispatchEvent(new CustomEvent('fbReady'));
+  }else{
+    window.FB.uid = null;
+    window.FB.ready = false;
+    showLogin();
+  }
+});
+
+// Função de logout disponível globalmente
+window.fbLogout = async ()=>{ if(confirm('Terminar sessão?')){ await signOut(fbAuth); location.reload(); } };
+</script>
+
+<script>
+/* =====================================================================
+   BASE DE DADOS LOCAL (localStorage)
+   Estrutura:
+   {
+     transactions: [{id, type:'income'|'expense', method:'dinheiro'|'mbway', amount, description, category, client, datetime}],
+     appointments: [{id, name, phone, service, datetime, notes, reminder}],
+     clients: [{id, name, phone, email, notes}],
+     version: 1
+   }
+===================================================================== */
+
+const STORAGE_KEY = 'salao_erika_v1';
+const state = {
+  transactions: [],
+  appointments: [],
+  clients: [],
+  currentMonth: new Date(),
+  selectedDay: new Date().toISOString().slice(0,10),
+  filter: {type:'all', period:'month'},
+  editingAppt: null,
+  editingClient: null,
+  editingAnamneseClient: null,
+};
+
+function loadDB(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const d = JSON.parse(raw);
+      state.transactions = d.transactions || [];
+      state.appointments = d.appointments || [];
+      state.clients = d.clients || [];
+    }
+  }catch(e){console.error(e)}
+}
+
+// Aplica dados vindos da cloud ao estado local + ecrã
+function applyData(d){
+  if(!d) return;
+  state.transactions = d.transactions || [];
+  state.appointments = d.appointments || [];
+  state.clients = d.clients || [];
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({version:1, ...d, savedAt:new Date().toISOString()}));
+  updateHeader();
+  renderDashboard();
+  refillClientLists();
+  if(typeof renderBackupStats==='function') try{renderBackupStats()}catch(e){}
+}
+
+let _fbSaveTimer=null, _fbApplyingRemote=false;
+
+function saveDB(){
+  const d = {
+    version:1,
+    transactions:state.transactions,
+    appointments:state.appointments,
+    clients:state.clients,
+    savedAt:new Date().toISOString(),
+  };
+  // 1) Guarda já localmente (rápido, funciona offline)
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+  // 2) Envia para a cloud (com pequeno atraso para agrupar várias gravações)
+  if(window.FB && window.FB.ready && !_fbApplyingRemote){
+    clearTimeout(_fbSaveTimer);
+    _fbSaveTimer = setTimeout(()=>{
+      window.FB.setDoc(window.FB.doc(), d).catch(err=>console.warn('Sync falhou:', err));
+    }, 400);
+  }
+}
+
+// Liga a sincronização em tempo real quando o login estiver pronto
+async function startCloudSync(){
+  if(!window.FB || !window.FB.ready) return;
+  try{
+    const snap = await window.FB.getDoc(window.FB.doc());
+    if(snap.exists()){
+      // Já há dados na cloud → usar esses
+      _fbApplyingRemote=true; applyData(snap.data()); _fbApplyingRemote=false;
+    }else{
+      // Primeira vez → enviar os dados locais para a cloud (migração automática)
+      const local = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"transactions":[],"appointments":[],"clients":[]}');
+      await window.FB.setDoc(window.FB.doc(), {version:1, ...local, savedAt:new Date().toISOString()});
+      toast('✓ Dados enviados para a cloud');
+    }
+  }catch(e){ console.warn('Sync inicial:', e); }
+
+  // Ouvir mudanças futuras (de outros dispositivos)
+  window.FB.onSnapshot(window.FB.doc(), (snap)=>{
+    if(!snap.exists()) return;
+    if(snap.metadata.hasPendingWrites) return; // ignora a própria gravação
+    _fbApplyingRemote=true; applyData(snap.data()); _fbApplyingRemote=false;
+  });
+}
+window.addEventListener('fbReady', startCloudSync);
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
+
+/* ===== HELPERS ===== */
+const fmt = n => Number(n||0).toLocaleString('pt-PT',{minimumFractionDigits:2, maximumFractionDigits:2});
+const fmtEur = n => '€' + fmt(n);
+const MONTHS = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+const DAYS_SHORT = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+
+function todayISO(){return new Date().toISOString().slice(0,10)}
+function nowISO(){
+  const d = new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset());
+  return d.toISOString().slice(0,16);
+}
+function nowTimeISO(){return new Date().toTimeString().slice(0,5)}
+
+function ptDate(iso){
+  const d = new Date(iso);
+  return d.toLocaleDateString('pt-PT',{day:'2-digit',month:'short'});
+}
+function ptDateTime(iso){
+  const d = new Date(iso);
+  return d.toLocaleDateString('pt-PT',{day:'2-digit',month:'2-digit'}) + ' · ' + d.toTimeString().slice(0,5);
+}
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window.__toastT);
+  window.__toastT = setTimeout(()=>t.classList.remove('show'), 2400);
+}
+
+/* ===== TABS ===== */
+function switchTab(tab){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active', v.id==='view-'+tab));
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(tab==='dashboard') renderDashboard();
+  if(tab==='entradas') renderEntries();
+  if(tab==='despesas') renderExpenses();
+  if(tab==='marcacoes') renderCalendar();
+  if(tab==='clientes') renderClients();
+  if(tab==='relatorios') renderReports();
+  if(tab==='fecho') renderFecho();
+  if(tab==='backup') renderBackupStats();
+}
+document.getElementById('tabBar').addEventListener('click', e=>{
+  const btn = e.target.closest('.tab-btn');
+  if(btn) switchTab(btn.dataset.tab);
+});
+
+/* ===== METHOD TOGGLES ===== */
+document.querySelectorAll('.method-toggle').forEach(toggle=>{
+  toggle.querySelectorAll('button').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      toggle.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      document.getElementById(toggle.dataset.target).value = b.dataset.val;
+    });
+  });
+});
+
+/* ===== HEADER DATE ===== */
+function updateHeader(){
+  const d = new Date();
+  document.getElementById('hdrDate').textContent = d.toLocaleDateString('pt-PT',{day:'2-digit',month:'2-digit',year:'numeric'});
+  document.getElementById('hdrTime').textContent = d.toTimeString().slice(0,5);
+}
+setInterval(updateHeader, 30000);
+
+/* ===== DASHBOARD ===== */
+function getMonthTx(date=new Date()){
+  const y=date.getFullYear(), m=date.getMonth();
+  return state.transactions.filter(t=>{
+    const td = new Date(t.datetime);
+    return td.getFullYear()===y && td.getMonth()===m;
+  });
+}
+function getTodayTx(){
+  const t = todayISO();
+  return state.transactions.filter(x=>x.datetime.startsWith(t));
+}
+function sum(arr, fn){return arr.reduce((a,b)=>a+(fn?fn(b):b),0)}
+
+function renderDashboard(){
+  const now = new Date();
+  document.getElementById('dashSubtitle').textContent = now.toLocaleDateString('pt-PT',{weekday:'long', day:'numeric', month:'long', year:'numeric'});
+
+  const monthTx = getMonthTx(now);
+  const income = sum(monthTx.filter(t=>t.type==='income'), t=>+t.amount);
+  const expense = sum(monthTx.filter(t=>t.type==='expense'), t=>+t.amount);
+  const saldo = income - expense;
+  const cash = sum(monthTx.filter(t=>t.method==='dinheiro'), t=>t.type==='income'?+t.amount:-t.amount);
+  const mb = sum(monthTx.filter(t=>t.method==='mbway'), t=>t.type==='income'?+t.amount:-t.amount);
+
+  document.getElementById('heroSaldo').textContent = fmt(saldo);
+  document.getElementById('heroEntradas').textContent = fmtEur(income);
+  document.getElementById('heroDespesas').textContent = fmtEur(expense);
+  document.getElementById('statCash').textContent = fmt(cash);
+  document.getElementById('statMb').textContent = fmt(mb);
+
+  const todayTx = getTodayTx();
+  const todaySaldo = sum(todayTx, t=>t.type==='income'?+t.amount:-t.amount);
+  document.getElementById('statToday').textContent = fmt(todaySaldo);
+  document.getElementById('statTodayCount').textContent = todayTx.length + ' ' + (todayTx.length===1?'movimento':'movimentos');
+
+  const totalAll = sum(state.transactions, t=>t.type==='income'?+t.amount:-t.amount);
+  document.getElementById('statTotal').textContent = fmt(totalAll);
+
+  // Marcações de hoje
+  const today = todayISO();
+  const todayAppts = state.appointments
+    .filter(a=>a.datetime.startsWith(today))
+    .sort((a,b)=>a.datetime.localeCompare(b.datetime));
+  const apptC = document.getElementById('todayAppts');
+  if(!todayAppts.length){
+    apptC.innerHTML = '<div class="card" style="text-align:center;padding:24px;color:var(--muted);font-family:Fraunces;font-style:italic;font-size:13px">Sem marcações hoje · descanse 🌿</div>';
+  } else {
+    apptC.innerHTML = todayAppts.map(a=>`
+      <div class="appt-card">
+        <div class="appt-time">${a.datetime.slice(11,16)}</div>
+        <div class="appt-info">
+          <div class="appt-name">${escapeHtml(a.name)}</div>
+          <div class="appt-meta">${escapeHtml(a.service||'—')}</div>
+        </div>
+        <a href="tel:${a.phone}" class="appt-phone">📞</a>
+      </div>
+    `).join('');
+  }
+
+  // Recent transactions
+  const recent = [...state.transactions].sort((a,b)=>b.datetime.localeCompare(a.datetime)).slice(0,5);
+  document.getElementById('recentList').innerHTML = recent.length ? recent.map(txItem).join('') :
+    '<div class="empty"><span class="empty-emoji">✨</span>Sem movimentos registados</div>';
+}
+
+function txItem(t){
+  const isIn = t.type==='income';
+  const icon = isIn ? '↗' : '↘';
+  return `<div class="item">
+    <div class="item-icon ${isIn?'income':'expense'}">${icon}</div>
+    <div class="item-body">
+      <div class="item-title">${escapeHtml(t.description||(isIn?'Entrada':'Despesa'))}</div>
+      <div class="item-meta">
+        ${ptDateTime(t.datetime)}
+        <span class="tag ${t.method==='mbway'?'mbway':'cash'}">${t.method==='mbway'?'MB Way':'Dinheiro'}</span>
+        ${t.client?'· '+escapeHtml(t.client):''}
+        ${t.category?'· '+escapeHtml(t.category):''}
+      </div>
+    </div>
+    <div class="item-amount ${isIn?'income':'expense'}">${isIn?'+':'−'}${fmt(t.amount)}€</div>
+    <div class="item-actions">
+      <button onclick="deleteTx('${t.id}')" title="Eliminar">✕</button>
+    </div>
+  </div>`;
+}
+
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ===== ENTRADAS ===== */
+function setDefaultDateTime(idDate, idTime){
+  document.getElementById(idDate).value = todayISO();
+  document.getElementById(idTime).value = nowTimeISO();
+}
+
+function addEntry(){
+  const amount = parseFloat(document.getElementById('entryAmount').value);
+  const desc = document.getElementById('entryDesc').value.trim();
+  const method = document.getElementById('entryMethod').value;
+  const client = document.getElementById('entryClient').value.trim();
+  const date = document.getElementById('entryDate').value;
+  const time = document.getElementById('entryTime').value;
+
+  if(!amount || amount<=0) return toast('Insira um valor válido');
+  if(!desc) return toast('Descreva o serviço');
+  if(!date || !time) return toast('Indique data e hora');
+
+  state.transactions.push({
+    id: uid(),
+    type:'income',
+    method, amount, description:desc, client,
+    datetime: date + 'T' + time,
+  });
+  saveDB();
+  document.getElementById('entryAmount').value='';
+  document.getElementById('entryDesc').value='';
+  document.getElementById('entryClient').value='';
+  setDefaultDateTime('entryDate','entryTime');
+  toast('✓ Entrada registada');
+  renderEntries();
+  refillClientLists();
+}
+
+function renderEntries(){
+  if(!document.getElementById('entryDate').value) setDefaultDateTime('entryDate','entryTime');
+  const list = state.transactions.filter(t=>t.type==='income')
+    .sort((a,b)=>b.datetime.localeCompare(a.datetime))
+    .slice(0,20);
+  document.getElementById('entriesList').innerHTML = list.length ? list.map(txItem).join('') :
+    '<div class="empty"><span class="empty-emoji">💸</span>Sem entradas registadas</div>';
+}
+
+/* ===== DESPESAS ===== */
+function addExpense(){
+  const amount = parseFloat(document.getElementById('expAmount').value);
+  const desc = document.getElementById('expDesc').value.trim();
+  const method = document.getElementById('expMethod').value;
+  const cat = document.getElementById('expCategory').value;
+  const date = document.getElementById('expDate').value;
+  const time = document.getElementById('expTime').value;
+
+  if(!amount || amount<=0) return toast('Insira um valor válido');
+  if(!desc) return toast('Descreva a despesa');
+
+  state.transactions.push({
+    id: uid(),
+    type:'expense',
+    method, amount, description:desc, category:cat,
+    datetime: date + 'T' + time,
+  });
+  saveDB();
+  document.getElementById('expAmount').value='';
+  document.getElementById('expDesc').value='';
+  setDefaultDateTime('expDate','expTime');
+  toast('✓ Despesa registada');
+  renderExpenses();
+}
+
+function renderExpenses(){
+  if(!document.getElementById('expDate').value) setDefaultDateTime('expDate','expTime');
+  const list = state.transactions.filter(t=>t.type==='expense')
+    .sort((a,b)=>b.datetime.localeCompare(a.datetime))
+    .slice(0,20);
+  document.getElementById('expensesList').innerHTML = list.length ? list.map(txItem).join('') :
+    '<div class="empty"><span class="empty-emoji">📋</span>Sem despesas registadas</div>';
+}
+
+function deleteTx(id){
+  if(!confirm('Eliminar este movimento?')) return;
+  state.transactions = state.transactions.filter(t=>t.id!==id);
+  saveDB();
+  toast('Movimento eliminado');
+  renderDashboard();renderEntries();renderExpenses();renderReports();renderFecho();
+}
+
+/* ===== CALENDÁRIO ===== */
+function changeMonth(dir){
+  if(dir===0){ state.currentMonth = new Date(); state.selectedDay = todayISO(); }
+  else { state.currentMonth.setMonth(state.currentMonth.getMonth()+dir); }
+  renderCalendar();
+}
+
+function renderCalendar(){
+  const cm = state.currentMonth;
+  const y = cm.getFullYear(), m = cm.getMonth();
+  document.getElementById('calMonth').textContent = MONTHS[m] + ' ' + y;
+
+  const first = new Date(y,m,1);
+  const last = new Date(y,m+1,0);
+  const startWeekday = first.getDay();
+  const daysInMonth = last.getDate();
+
+  // Eventos por dia
+  const eventsByDay = {};
+  state.appointments.forEach(a=>{
+    const d = a.datetime.slice(0,10);
+    if(!eventsByDay[d]) eventsByDay[d]=[];
+    eventsByDay[d].push(a);
+  });
+
+  let html = DAYS_SHORT.map(d=>`<div class="cal-day-name">${d}</div>`).join('');
+
+  // Dias do mês anterior
+  const prevLast = new Date(y,m,0).getDate();
+  for(let i=startWeekday-1;i>=0;i--){
+    html += `<div class="cal-day other">${prevLast-i}</div>`;
+  }
+  // Dias do mês actual
+  const todayStr = todayISO();
+  for(let d=1; d<=daysInMonth; d++){
+    const iso = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const cls = ['cal-day'];
+    if(iso===todayStr) cls.push('today');
+    if(iso===state.selectedDay) cls.push('selected');
+    if(eventsByDay[iso]) cls.push('has-event');
+    html += `<div class="${cls.join(' ')}" onclick="selectDay('${iso}')">${d}</div>`;
+  }
+  // Dias do próximo mês para preencher grelha
+  const totalCells = startWeekday + daysInMonth;
+  const trailing = (7 - totalCells%7) % 7;
+  for(let d=1; d<=trailing; d++){
+    html += `<div class="cal-day other">${d}</div>`;
+  }
+  document.getElementById('calGrid').innerHTML = html;
+
+  renderDayAppts();
+}
+
+function selectDay(iso){
+  state.selectedDay = iso;
+  renderCalendar();
+}
+
+function renderDayAppts(){
+  const iso = state.selectedDay;
+  const d = new Date(iso);
+  document.getElementById('apptDayLabel').textContent = d.toLocaleDateString('pt-PT',{weekday:'long', day:'numeric', month:'long'});
+  const list = state.appointments
+    .filter(a=>a.datetime.startsWith(iso))
+    .sort((a,b)=>a.datetime.localeCompare(b.datetime));
+  const c = document.getElementById('apptDayList');
+  if(!list.length){
+    c.innerHTML = '<div class="empty" style="padding:20px"><span class="empty-emoji">🌸</span>Sem marcações neste dia</div>';
+  } else {
+    c.innerHTML = list.map(a=>`
+      <div class="appt-card" onclick="editAppt('${a.id}')">
+        <div class="appt-time">${a.datetime.slice(11,16)}</div>
+        <div class="appt-info">
+          <div class="appt-name">${escapeHtml(a.name)}</div>
+          <div class="appt-meta">${escapeHtml(a.service||'—')}</div>
+          ${a.phone?`<div class="appt-phone">📞 ${escapeHtml(a.phone)}</div>`:''}
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+/* ===== APPT MODAL ===== */
+function openApptModal(appt=null){
+  state.editingAppt = appt;
+  document.getElementById('apptModalTitle').textContent = appt ? 'Editar marcação' : 'Nova marcação';
+  document.getElementById('apptDeleteBtn').style.display = appt ? 'flex' : 'none';
+  document.getElementById('apptName').value = appt?.name || '';
+  document.getElementById('apptPhone').value = appt?.phone || '';
+  document.getElementById('apptService').value = appt?.service || '';
+  document.getElementById('apptDate').value = appt ? appt.datetime.slice(0,10) : state.selectedDay;
+  document.getElementById('apptTime').value = appt ? appt.datetime.slice(11,16) : '10:00';
+  document.getElementById('apptNotes').value = appt?.notes || '';
+  document.getElementById('apptReminder').value = appt?.reminder ?? 30;
+  refillClientLists();
+  document.getElementById('apptModal').classList.add('show');
+}
+function closeApptModal(){
+  document.getElementById('apptModal').classList.remove('show');
+  state.editingAppt = null;
+}
+function editAppt(id){
+  const a = state.appointments.find(x=>x.id===id);
+  if(a) openApptModal(a);
+}
+function saveAppt(){
+  const name = document.getElementById('apptName').value.trim();
+  const phone = document.getElementById('apptPhone').value.trim();
+  const service = document.getElementById('apptService').value.trim();
+  const date = document.getElementById('apptDate').value;
+  const time = document.getElementById('apptTime').value;
+  const notes = document.getElementById('apptNotes').value.trim();
+  const reminder = parseInt(document.getElementById('apptReminder').value);
+
+  if(!name) return toast('Nome do cliente é obrigatório');
+  if(!date || !time) return toast('Indique data e hora');
+
+  const data = {name, phone, service, datetime:date+'T'+time, notes, reminder};
+  if(state.editingAppt){
+    Object.assign(state.editingAppt, data);
+  } else {
+    state.appointments.push({id:uid(), ...data});
+    // criar cliente automaticamente se não existir
+    if(phone && !state.clients.find(c=>c.phone===phone)){
+      state.clients.push({id:uid(), name, phone, email:'', notes:''});
+    }
+  }
+  saveDB();
+  scheduleReminder(state.editingAppt || state.appointments[state.appointments.length-1]);
+  closeApptModal();
+  toast('✓ Marcação guardada');
+  renderCalendar();
+  renderDashboard();
+}
+function deleteCurrentAppt(){
+  if(!state.editingAppt) return;
+  if(!confirm('Eliminar marcação?')) return;
+  state.appointments = state.appointments.filter(a=>a.id!==state.editingAppt.id);
+  saveDB();
+  closeApptModal();
+  toast('Marcação eliminada');
+  renderCalendar();
+  renderDashboard();
+}
+
+/* ===== CLIENTES ===== */
+function refillClientLists(){
+  const opts = state.clients.map(c=>`<option value="${escapeHtml(c.name)}">${escapeHtml(c.phone||'')}</option>`).join('');
+  document.getElementById('clientList').innerHTML = opts;
+  document.getElementById('clientListModal').innerHTML = opts;
+}
+
+function renderClients(){
+  const q = (document.getElementById('clientSearch').value||'').toLowerCase();
+  const list = state.clients
+    .filter(c=>!q || c.name.toLowerCase().includes(q) || (c.phone||'').includes(q))
+    .sort((a,b)=>a.name.localeCompare(b.name,'pt'));
+  const c = document.getElementById('clientsList');
+  if(!list.length){
+    c.innerHTML = '<div class="empty"><span class="empty-emoji">♀</span>Sem clientes registados</div>';
+    return;
+  }
+  c.innerHTML = list.map(cl=>`
+    <div class="item" onclick="editClient('${cl.id}')">
+      <div class="client-avatar">${escapeHtml(cl.name.slice(0,1).toUpperCase())}</div>
+      <div class="item-body">
+        <div class="item-title">${escapeHtml(cl.name)}${cl.anamnese?`<span style="background:var(--plum);color:white;font-size:9px;padding:2px 6px;border-radius:6px;font-weight:700;letter-spacing:.5px;margin-left:6px">FICHA${cl.anamnese.assinatura?' ✍️':''}</span>`:''}</div>
+        <div class="item-meta">${escapeHtml(cl.phone||'sem telefone')}${cl.email?' · '+escapeHtml(cl.email):''}</div>
+      </div>
+      ${cl.phone?`<a href="tel:${cl.phone}" class="appt-phone" onclick="event.stopPropagation()" style="font-size:18px;padding:6px">📞</a>`:''}
+    </div>
+  `).join('');
+}
+
+function openClientModal(cli=null){
+  state.editingClient = cli;
+  document.getElementById('clientModalTitle').textContent = cli ? 'Editar cliente' : 'Novo cliente';
+  document.getElementById('cliDeleteBtn').style.display = cli ? 'flex' : 'none';
+  document.getElementById('cliAnamneseBtn').style.display = cli ? 'flex' : 'none';
+  document.getElementById('cliName').value = cli?.name || '';
+  document.getElementById('cliPhone').value = cli?.phone || '';
+  document.getElementById('cliEmail').value = cli?.email || '';
+  document.getElementById('cliNotes').value = cli?.notes || '';
+  document.getElementById('clientModal').classList.add('show');
+}
+function closeClientModal(){
+  document.getElementById('clientModal').classList.remove('show');
+  state.editingClient = null;
+}
+function editClient(id){
+  const c = state.clients.find(x=>x.id===id);
+  if(c) openClientModal(c);
+}
+function saveClient(){
+  const name = document.getElementById('cliName').value.trim();
+  const phone = document.getElementById('cliPhone').value.trim();
+  const email = document.getElementById('cliEmail').value.trim();
+  const notes = document.getElementById('cliNotes').value.trim();
+  if(!name) return toast('Nome é obrigatório');
+  const data = {name, phone, email, notes};
+  if(state.editingClient){
+    Object.assign(state.editingClient, data);
+  } else {
+    const newCli = {id:uid(), ...data, anamnese:null};
+    state.clients.push(newCli);
+    state.editingClient = newCli;
+  }
+  saveDB();
+  document.getElementById('clientModalTitle').textContent = 'Editar cliente';
+  document.getElementById('cliDeleteBtn').style.display = 'flex';
+  document.getElementById('cliAnamneseBtn').style.display = 'flex';
+  toast('✓ Cliente guardado');
+  renderClients();
+  refillClientLists();
+}
+function deleteCurrentClient(){
+  if(!state.editingClient) return;
+  if(!confirm('Eliminar cliente?')) return;
+  state.clients = state.clients.filter(c=>c.id!==state.editingClient.id);
+  saveDB();
+  closeClientModal();
+  toast('Cliente eliminado');
+  renderClients();
+  refillClientLists();
+}
+
+/* ===== RELATÓRIOS ===== */
+document.querySelectorAll('#view-relatorios [data-filter]').forEach(c=>{
+  c.addEventListener('click', ()=>{
+    document.querySelectorAll('#view-relatorios [data-filter]').forEach(x=>x.classList.remove('active'));
+    c.classList.add('active');
+    state.filter.type = c.dataset.filter;
+    renderReports();
+  });
+});
+document.querySelectorAll('#view-relatorios [data-period]').forEach(c=>{
+  c.addEventListener('click', ()=>{
+    document.querySelectorAll('#view-relatorios [data-period]').forEach(x=>x.classList.remove('active'));
+    c.classList.add('active');
+    state.filter.period = c.dataset.period;
+    renderReports();
+  });
+});
+
+function periodFilter(t){
+  const td = new Date(t.datetime);
+  const now = new Date();
+  if(state.filter.period==='today'){
+    return t.datetime.startsWith(todayISO());
+  }
+  if(state.filter.period==='week'){
+    const wk = new Date(); wk.setDate(wk.getDate()-7);
+    return td >= wk;
+  }
+  if(state.filter.period==='month'){
+    return td.getFullYear()===now.getFullYear() && td.getMonth()===now.getMonth();
+  }
+  return true;
+}
+
+function renderReports(){
+  let list = state.transactions.filter(periodFilter);
+  if(state.filter.type==='income') list = list.filter(t=>t.type==='income');
+  if(state.filter.type==='expense') list = list.filter(t=>t.type==='expense');
+  if(state.filter.type==='dinheiro') list = list.filter(t=>t.method==='dinheiro');
+  if(state.filter.type==='mbway') list = list.filter(t=>t.method==='mbway');
+  list.sort((a,b)=>b.datetime.localeCompare(a.datetime));
+
+  const inc = sum(list.filter(t=>t.type==='income'), t=>+t.amount);
+  const out = sum(list.filter(t=>t.type==='expense'), t=>+t.amount);
+  document.getElementById('repIn').textContent = fmt(inc);
+  document.getElementById('repOut').textContent = fmt(out);
+
+  document.getElementById('repList').innerHTML = list.length ? list.map(txItem).join('') :
+    '<div class="empty"><span class="empty-emoji">📊</span>Sem movimentos para este filtro</div>';
+}
+
+/* ===== FECHO ===== */
+function renderFecho(){
+  if(!document.getElementById('fechoDay').value) document.getElementById('fechoDay').value = todayISO();
+  if(!document.getElementById('fechoMonth').value) document.getElementById('fechoMonth').value = todayISO().slice(0,7);
+
+  const day = document.getElementById('fechoDay').value;
+  const dayTx = state.transactions.filter(t=>t.datetime.startsWith(day));
+  const fdInCash = sum(dayTx.filter(t=>t.type==='income'&&t.method==='dinheiro'),t=>+t.amount);
+  const fdInMb = sum(dayTx.filter(t=>t.type==='income'&&t.method==='mbway'),t=>+t.amount);
+  const fdOutCash = sum(dayTx.filter(t=>t.type==='expense'&&t.method==='dinheiro'),t=>+t.amount);
+  const fdOutMb = sum(dayTx.filter(t=>t.type==='expense'&&t.method==='mbway'),t=>+t.amount);
+  document.getElementById('fdInCash').textContent = fmt(fdInCash);
+  document.getElementById('fdInMb').textContent = fmt(fdInMb);
+  document.getElementById('fdOutCash').textContent = fmt(fdOutCash);
+  document.getElementById('fdOutMb').textContent = fmt(fdOutMb);
+  document.getElementById('fdSaldo').textContent = fmt(fdInCash+fdInMb-fdOutCash-fdOutMb);
+  document.getElementById('fechoDayDate').textContent = new Date(day).toLocaleDateString('pt-PT');
+
+  const month = document.getElementById('fechoMonth').value;
+  const monthTx = state.transactions.filter(t=>t.datetime.startsWith(month));
+  const fmInCash = sum(monthTx.filter(t=>t.type==='income'&&t.method==='dinheiro'),t=>+t.amount);
+  const fmInMb = sum(monthTx.filter(t=>t.type==='income'&&t.method==='mbway'),t=>+t.amount);
+  const fmOutCash = sum(monthTx.filter(t=>t.type==='expense'&&t.method==='dinheiro'),t=>+t.amount);
+  const fmOutMb = sum(monthTx.filter(t=>t.type==='expense'&&t.method==='mbway'),t=>+t.amount);
+  document.getElementById('fmInCash').textContent = fmt(fmInCash);
+  document.getElementById('fmInMb').textContent = fmt(fmInMb);
+  document.getElementById('fmOutCash').textContent = fmt(fmOutCash);
+  document.getElementById('fmOutMb').textContent = fmt(fmOutMb);
+  document.getElementById('fmSaldo').textContent = fmt(fmInCash+fmInMb-fmOutCash-fmOutMb);
+}
+
+function exportMonthReport(){
+  const month = document.getElementById('fechoMonth').value;
+  const tx = state.transactions.filter(t=>t.datetime.startsWith(month))
+    .sort((a,b)=>a.datetime.localeCompare(b.datetime));
+  const inc = sum(tx.filter(t=>t.type==='income'),t=>+t.amount);
+  const out = sum(tx.filter(t=>t.type==='expense'),t=>+t.amount);
+
+  let html = `Relatório mensal — ${month}\nSalão Érika\n\n`;
+  html += `ENTRADAS: €${fmt(inc)}\nDESPESAS: €${fmt(out)}\nSALDO: €${fmt(inc-out)}\n\n`;
+  html += `Movimentos:\n`;
+  tx.forEach(t=>{
+    html += `${t.datetime.replace('T',' ')} | ${t.type==='income'?'+':'-'}€${fmt(t.amount)} | ${t.method} | ${t.description||'-'}${t.client?' | '+t.client:''}${t.category?' | '+t.category:''}\n`;
+  });
+
+  const blob = new Blob([html], {type:'text/plain;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `salao_erika_${month}.txt`;
+  a.click();
+  toast('Relatório exportado');
+}
+
+/* ===== BACKUP ===== */
+function exportBackup(){
+  const data = {
+    version:1,
+    salao:'Érika',
+    exportedAt: new Date().toISOString(),
+    transactions: state.transactions,
+    appointments: state.appointments,
+    clients: state.clients,
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `salao_erika_backup_${todayISO()}.json`;
+  a.click();
+  toast('✓ Backup exportado — guarde no Drive');
+}
+
+function importBackup(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    try{
+      const d = JSON.parse(ev.target.result);
+      if(!confirm('Substituir todos os dados pelos do backup?')) return;
+      state.transactions = d.transactions || [];
+      state.appointments = d.appointments || [];
+      state.clients = d.clients || [];
+      saveDB();
+      toast('✓ Backup importado com sucesso');
+      renderDashboard();renderCalendar();renderClients();renderBackupStats();
+      switchTab('dashboard');
+    }catch(err){
+      toast('Erro ao importar ficheiro');
+    }
+  };
+  r.readAsText(file);
+  e.target.value = '';
+}
+
+function renderBackupStats(){
+  document.getElementById('cntTx').textContent = state.transactions.length;
+  document.getElementById('cntAppt').textContent = state.appointments.length;
+  document.getElementById('cntCli').textContent = state.clients.length;
+  const size = new Blob([localStorage.getItem(STORAGE_KEY)||'']).size;
+  document.getElementById('cntSize').textContent = (size/1024).toFixed(1)+' KB';
+}
+
+function confirmReset(){
+  if(!confirm('TEM A CERTEZA? Esta acção apaga todos os dados!')) return;
+  if(!confirm('Última confirmação — apagar tudo?')) return;
+  state.transactions=[];state.appointments=[];state.clients=[];
+  saveDB();
+  toast('Dados apagados');
+  renderDashboard();renderBackupStats();
+  switchTab('dashboard');
+}
+
+/* ===== LEMBRETES (notificações) ===== */
+function scheduleReminder(appt){
+  if(!appt || !appt.reminder) return;
+  if(!('Notification' in window)) return;
+  if(Notification.permission==='default') Notification.requestPermission();
+  if(Notification.permission!=='granted') return;
+  const apptTime = new Date(appt.datetime).getTime();
+  const triggerAt = apptTime - appt.reminder*60*1000;
+  const delay = triggerAt - Date.now();
+  if(delay<=0 || delay > 24*60*60*1000) return; // só dentro de 24h
+  setTimeout(()=>{
+    new Notification('Marcação · Salão Érika', {
+      body: `${appt.name} — ${appt.service} às ${appt.datetime.slice(11,16)}`,
+      icon:"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232D7A4F'/><text x='50' y='70' font-family='Georgia,serif' font-size='60' font-style='italic' text-anchor='middle' fill='%23F2F7F4'>É</text></svg>"
+    });
+  }, delay);
+}
+
+function scheduleAllReminders(){
+  state.appointments.forEach(scheduleReminder);
+}
+
+/* ===== INIT ===== */
+loadDB();
+updateHeader();
+setDefaultDateTime('entryDate','entryTime');
+setDefaultDateTime('expDate','expTime');
+renderDashboard();
+refillClientLists();
+scheduleAllReminders();
+
+// Service worker (offline)
+if('serviceWorker' in navigator){
+  const swCode = `
+    const CACHE='salao-erika-v1';
+    self.addEventListener('install',e=>self.skipWaiting());
+    self.addEventListener('activate',e=>self.clients.claim());
+    self.addEventListener('fetch',e=>{
+      e.respondWith(
+        caches.open(CACHE).then(cache=>
+          cache.match(e.request).then(r=>r || fetch(e.request).then(resp=>{
+            if(e.request.method==='GET' && resp.ok) cache.put(e.request, resp.clone());
+            return resp;
+          }).catch(()=>cache.match('./')))
+        )
+      );
+    });
+  `;
+  const blob = new Blob([swCode], {type:'application/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
+}
+
+/* ===== ASSINATURA DIGITAL ===== */
+let sigCanvas, sigCtx, sigDrawing = false, sigHasContent = false;
+
+function initSignatureCanvas(){
+  sigCanvas = document.getElementById('signatureCanvas');
+  if(!sigCanvas) return;
+
+  // Ajustar resolução para ecrã retina
+  const rect = sigCanvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  sigCanvas.width = rect.width * dpr;
+  sigCanvas.height = rect.height * dpr;
+  sigCtx = sigCanvas.getContext('2d');
+  sigCtx.scale(dpr, dpr);
+  sigCtx.strokeStyle = '#1A2E22';
+  sigCtx.lineWidth = 2.2;
+  sigCtx.lineCap = 'round';
+  sigCtx.lineJoin = 'round';
+
+  function getPos(e){
+    const r = sigCanvas.getBoundingClientRect();
+    const src = e.touches ? e.touches[0] : e;
+    return { x: src.clientX - r.left, y: src.clientY - r.top };
+  }
+
+  function startDraw(e){
+    e.preventDefault();
+    sigDrawing = true;
+    const p = getPos(e);
+    sigCtx.beginPath();
+    sigCtx.moveTo(p.x, p.y);
+    document.getElementById('signaturePlaceholder').style.display='none';
+  }
+  function draw(e){
+    if(!sigDrawing) return;
+    e.preventDefault();
+    const p = getPos(e);
+    sigCtx.lineTo(p.x, p.y);
+    sigCtx.stroke();
+    sigHasContent = true;
+    document.getElementById('signatureStatus').textContent = '✓ Assinatura registada';
+    document.getElementById('signatureStatus').style.color = 'var(--plum)';
+  }
+  function endDraw(e){ sigDrawing = false; }
+
+  sigCanvas.addEventListener('mousedown', startDraw);
+  sigCanvas.addEventListener('mousemove', draw);
+  sigCanvas.addEventListener('mouseup', endDraw);
+  sigCanvas.addEventListener('mouseleave', endDraw);
+  sigCanvas.addEventListener('touchstart', startDraw, {passive:false});
+  sigCanvas.addEventListener('touchmove', draw, {passive:false});
+  sigCanvas.addEventListener('touchend', endDraw);
+}
+
+function clearSignature(){
+  if(!sigCanvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = sigCanvas.getBoundingClientRect();
+  sigCtx.clearRect(0, 0, rect.width, rect.height);
+  sigHasContent = false;
+  document.getElementById('signaturePlaceholder').style.display='flex';
+  document.getElementById('signatureStatus').textContent = 'Sem assinatura';
+  document.getElementById('signatureStatus').style.color = 'var(--muted)';
+}
+
+function getSignatureDataURL(){
+  if(!sigCanvas || !sigHasContent) return null;
+  return sigCanvas.toDataURL('image/png');
+}
+
+function loadSignatureFromDataURL(dataUrl){
+  if(!dataUrl || !sigCanvas) return;
+  const img = new Image();
+  img.onload = () => {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = sigCanvas.getBoundingClientRect();
+    sigCtx.clearRect(0, 0, rect.width, rect.height);
+    sigCtx.drawImage(img, 0, 0, rect.width, rect.height);
+    sigHasContent = true;
+    document.getElementById('signaturePlaceholder').style.display='none';
+    document.getElementById('signatureStatus').textContent = '✓ Assinatura registada';
+    document.getElementById('signatureStatus').style.color = 'var(--plum)';
+  };
+  img.src = dataUrl;
+}
+
+/* ===== ANAMNESE ===== */
+function initAnamneseToggles(){
+  document.querySelectorAll('#anamneseModal .method-toggle').forEach(toggle=>{
+    toggle.querySelectorAll('button').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        toggle.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+        b.classList.add('active');
+        document.getElementById(toggle.dataset.target).value = b.dataset.val;
+      });
+    });
+  });
+}
+
+function openAnamneseFromClient(){
+  const cli = state.editingClient;
+  if(!cli) return;
+  closeClientModal();
+  openAnamneseModal(cli);
+}
+
+function openAnamneseModal(cli){
+  const an = cli.anamnese || {};
+  document.getElementById('anamneseClientName').textContent = '📋 ' + cli.name;
+  document.getElementById('anDtNasc').value = an.dtNasc || '';
+  document.getElementById('anOcupacao').value = an.ocupacao || '';
+  document.getElementById('anProcRecenteSpec').value = an.procRecenteSpec || '';
+  document.getElementById('anHidratacaoSpec').value = an.hidratacaoSpec || '';
+  document.getElementById('anCalorSpec').value = an.calorSpec || '';
+  document.getElementById('anPatDermatite').checked = !!an.patDermatite;
+  document.getElementById('anPatQueda').checked = !!an.patQueda;
+  document.getElementById('anPatQuebra').checked = !!an.patQuebra;
+  document.getElementById('anPatPontas').checked = !!an.patPontas;
+  document.getElementById('anPatNos').checked = !!an.patNos;
+  document.getElementById('anPatRarefacao').checked = !!an.patRarefacao;
+  document.getElementById('anDoencaSpec').value = an.doencaSpec || '';
+  document.getElementById('anGestanteMeses').value = an.gestanteMeses || '';
+  document.getElementById('anAlergiaSpec').value = an.alergiaSpec || '';
+  document.getElementById('anSubtipo').value = an.subtipo || '';
+  document.getElementById('anCaracteristica').value = an.caracteristica || '';
+  document.getElementById('anDensidade').value = an.densidade || '';
+  document.getElementById('anProcedimento').value = an.procedimento || '';
+  document.getElementById('anProduto').value = an.produto || '';
+  document.getElementById('anGramas').value = an.gramas || '';
+  document.getElementById('anFinalizacao').value = an.finalizacao || '';
+  document.getElementById('anHomeCare').value = an.homeCare || '';
+  document.getElementById('anMecha1Quimica').value = an.mecha1Quimica || '';
+  document.getElementById('anMecha1Tempo').value = an.mecha1Tempo || '';
+  document.getElementById('anMecha1Data').value = an.mecha1Data || '';
+  document.getElementById('anMecha1Resultado').value = an.mecha1Resultado || '';
+  document.getElementById('anMecha2Quimica').value = an.mecha2Quimica || '';
+  document.getElementById('anMecha2Tempo').value = an.mecha2Tempo || '';
+  document.getElementById('anMecha2Data').value = an.mecha2Data || '';
+  document.getElementById('anMecha2Resultado').value = an.mecha2Resultado || '';
+  document.getElementById('anData').value = an.data || todayISO();
+
+  // Radios tipo cabelo
+  if(an.tipoCabelo){
+    const r = document.querySelector(`input[name="anTipoCabelo"][value="${an.tipoCabelo}"]`);
+    if(r) r.checked = true;
+  } else {
+    document.querySelectorAll('input[name="anTipoCabelo"]').forEach(r=>r.checked=false);
+  }
+  if(an.textura){
+    const r = document.querySelector(`input[name="anTextura"][value="${an.textura}"]`);
+    if(r) r.checked = true;
+  } else {
+    document.querySelectorAll('input[name="anTextura"]').forEach(r=>r.checked=false);
+  }
+
+  // Toggles
+  function setToggle(id, val){
+    const hidden = document.getElementById(id);
+    if(!hidden) return;
+    hidden.value = val;
+    const toggle = hidden.previousElementSibling;
+    if(!toggle || !toggle.classList.contains('method-toggle')) return;
+    toggle.querySelectorAll('button').forEach(b=>{
+      b.classList.toggle('active', b.dataset.val === val);
+    });
+  }
+  setToggle('anProcRecente', an.procRecente||'nao');
+  setToggle('anHidratacao', an.hidratacao||'nao');
+  setToggle('anCalor', an.calor||'nao');
+  setToggle('anDoenca', an.doenca||'nao');
+  setToggle('anGestante', an.gestante||'nao');
+  setToggle('anAlergia', an.alergia||'nao');
+  setToggle('anCorNatural', an.corNatural||'sim');
+  setToggle('anRetoque', an.retoque||'nao');
+  setToggle('anInteiroToggle', an.inteiroToggle||'nao');
+
+  state.editingAnamneseClient = cli;
+  document.getElementById('anamneseModal').classList.add('show');
+
+  // Inicializar canvas após o modal estar visível
+  setTimeout(()=>{
+    sigHasContent = false;
+    initSignatureCanvas();
+    if(an.assinatura){
+      loadSignatureFromDataURL(an.assinatura);
+    } else {
+      clearSignature();
+    }
+  }, 80);
+}
+
+function closeAnamneseModal(){
+  document.getElementById('anamneseModal').classList.remove('show');
+  state.editingAnamneseClient = null;
+  sigHasContent = false;
+}
+
+function saveAnamnese(){
+  const cli = state.editingAnamneseClient;
+  if(!cli) return;
+  const tipoCabelo = (document.querySelector('input[name="anTipoCabelo"]:checked') || {}).value || '';
+  const textura = (document.querySelector('input[name="anTextura"]:checked') || {}).value || '';
+  cli.anamnese = {
+    dtNasc: document.getElementById('anDtNasc').value,
+    ocupacao: document.getElementById('anOcupacao').value,
+    procRecente: document.getElementById('anProcRecente').value,
+    procRecenteSpec: document.getElementById('anProcRecenteSpec').value,
+    hidratacao: document.getElementById('anHidratacao').value,
+    hidratacaoSpec: document.getElementById('anHidratacaoSpec').value,
+    calor: document.getElementById('anCalor').value,
+    calorSpec: document.getElementById('anCalorSpec').value,
+    patDermatite: document.getElementById('anPatDermatite').checked,
+    patQueda: document.getElementById('anPatQueda').checked,
+    patQuebra: document.getElementById('anPatQuebra').checked,
+    patPontas: document.getElementById('anPatPontas').checked,
+    patNos: document.getElementById('anPatNos').checked,
+    patRarefacao: document.getElementById('anPatRarefacao').checked,
+    doenca: document.getElementById('anDoenca').value,
+    doencaSpec: document.getElementById('anDoencaSpec').value,
+    gestante: document.getElementById('anGestante').value,
+    gestanteMeses: document.getElementById('anGestanteMeses').value,
+    alergia: document.getElementById('anAlergia').value,
+    alergiaSpec: document.getElementById('anAlergiaSpec').value,
+    tipoCabelo,
+    subtipo: document.getElementById('anSubtipo').value,
+    corNatural: document.getElementById('anCorNatural').value,
+    caracteristica: document.getElementById('anCaracteristica').value,
+    densidade: document.getElementById('anDensidade').value,
+    textura,
+    procedimento: document.getElementById('anProcedimento').value,
+    produto: document.getElementById('anProduto').value,
+    gramas: document.getElementById('anGramas').value,
+    retoque: document.getElementById('anRetoque').value,
+    inteiroToggle: document.getElementById('anInteiroToggle').value,
+    finalizacao: document.getElementById('anFinalizacao').value,
+    homeCare: document.getElementById('anHomeCare').value,
+    mecha1Quimica: document.getElementById('anMecha1Quimica').value,
+    mecha1Tempo: document.getElementById('anMecha1Tempo').value,
+    mecha1Data: document.getElementById('anMecha1Data').value,
+    mecha1Resultado: document.getElementById('anMecha1Resultado').value,
+    mecha2Quimica: document.getElementById('anMecha2Quimica').value,
+    mecha2Tempo: document.getElementById('anMecha2Tempo').value,
+    mecha2Data: document.getElementById('anMecha2Data').value,
+    mecha2Resultado: document.getElementById('anMecha2Resultado').value,
+    data: document.getElementById('anData').value,
+    assinatura: getSignatureDataURL(),
+    updatedAt: new Date().toISOString(),
+  };
+  saveDB();
+  closeAnamneseModal();
+  toast('✓ Ficha de anamnese guardada');
+  renderClients();
+}
+
+/* ===== EXPORTAR PDF ANAMNESE ===== */
+function exportAnamnесePDF(){
+  const cli = state.editingAnamneseClient;
+  if(!cli || !cli.anamnese){
+    toast('Guarde a ficha primeiro');
+    return;
+  }
+  const an = cli.anamnese;
+
+  // Guardar primeiro com assinatura actual
+  const tipoCabelo = (document.querySelector('input[name="anTipoCabelo"]:checked') || {}).value || an.tipoCabelo || '';
+  const textura = (document.querySelector('input[name="anTextura"]:checked') || {}).value || an.textura || '';
+  const sigDataUrl = getSignatureDataURL() || an.assinatura || null;
+
+  const fmtDate = iso => iso ? new Date(iso).toLocaleDateString('pt-PT') : '—';
+  const yn = v => v === 'sim' ? 'Sim' : 'Não';
+  const patologias = [
+    an.patDermatite && 'Dermatite',
+    an.patQueda && 'Queda de cabelo',
+    an.patQuebra && 'Quebra',
+    an.patPontas && 'Pontas duplas',
+    an.patNos && 'Nós',
+    an.patRarefacao && 'Rarefação',
+  ].filter(Boolean).join(', ') || '—';
+
+  const tipoCabeloLabel = {
+    '1-liso':'1 · Liso','2-ondulado':'2 · Ondulado',
+    '3-cacheado':'3 · Cacheado','4-crespo':'4 · Crespo'
+  }[tipoCabelo] || '—';
+
+  const sigHtml = sigDataUrl
+    ? `<img src="${sigDataUrl}" style="max-width:280px;height:70px;object-fit:contain;display:block;margin:4px 0">`
+    : '<div style="height:50px;border-bottom:1px solid #333;width:250px;margin:8px 0"></div>';
+
+  const html = `<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>Ficha de Anamnese — ${cli.name}</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Georgia',serif;font-size:11pt;color:#111;background:white;padding:20px 28px}
+  h1{font-size:17pt;text-align:center;font-style:italic;letter-spacing:1px;border-bottom:2.5px solid #2D7A4F;padding-bottom:8px;margin-bottom:4px;color:#1F5C39}
+  h2{font-size:11pt;text-align:center;text-transform:uppercase;letter-spacing:3px;color:#2D7A4F;margin-bottom:18px;font-family:Arial,sans-serif}
+  .section{margin-bottom:14px}
+  .sec-title{font-size:8pt;text-transform:uppercase;letter-spacing:2px;color:#2D7A4F;font-family:Arial,sans-serif;font-weight:bold;border-bottom:1px solid #c8e6d0;padding-bottom:3px;margin-bottom:8px}
+  .row{display:flex;gap:10px;margin-bottom:6px;align-items:baseline;flex-wrap:wrap}
+  .field{flex:1;min-width:120px}
+  .field label{font-size:7.5pt;text-transform:uppercase;letter-spacing:1px;color:#555;font-family:Arial,sans-serif;display:block;margin-bottom:1px}
+  .field .val{font-size:10pt;border-bottom:1px solid #ccc;min-height:18px;padding-bottom:2px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin-bottom:6px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px 12px;margin-bottom:6px}
+  .grid4{display:grid;grid-template-columns:2fr 1fr 1fr 2fr;gap:6px;font-size:9pt}
+  .mechas-header{background:#e8f5ee;font-size:7.5pt;text-transform:uppercase;letter-spacing:1px;padding:4px 6px;color:#1F5C39;font-family:Arial,sans-serif;font-weight:bold;border-radius:4px 4px 0 0;display:grid;grid-template-columns:2fr 1fr 1fr 2fr;gap:6px;margin-bottom:0}
+  .mechas-row{display:grid;grid-template-columns:2fr 1fr 1fr 2fr;gap:6px;font-size:9.5pt;padding:4px 6px;border:1px solid #d0e8d8;border-top:none}
+  .mechas-row:first-of-type{border-top:none}
+  .legal{font-size:8.5pt;color:#444;line-height:1.55;background:#f5fbf7;border:1px solid #c8e6d0;border-radius:6px;padding:10px 12px;margin:14px 0 8px;font-style:italic}
+  .sig-block{margin-top:10px}
+  .sig-row{display:flex;gap:40px;align-items:flex-end;margin-top:8px}
+  .sig-col{flex:1}
+  .sig-line{border-bottom:1px solid #333;min-height:55px;display:flex;align-items:flex-end;padding-bottom:4px}
+  .sig-label{font-size:7.5pt;text-transform:uppercase;letter-spacing:1px;color:#555;font-family:Arial,sans-serif;margin-top:4px}
+  .logo-area{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:12px}
+  .logo-circle{width:42px;height:42px;border-radius:10px;background:#2D7A4F;display:flex;align-items:center;justify-content:center;color:white;font-size:26px;font-style:italic;font-family:Georgia,serif}
+  .salon-name{font-size:14pt;font-weight:bold;color:#2D7A4F;font-family:Georgia,serif;font-style:italic}
+  @media print{body{padding:10px 16px}}
+</style>
+</head>
+<body>
+
+<div class="logo-area">
+  <div class="logo-circle">É</div>
+  <div><div class="salon-name">Salão Érika</div><div style="font-size:8pt;color:#666;font-family:Arial;letter-spacing:2px;text-transform:uppercase">Gestão · Beleza</div></div>
+</div>
+<h1>Procedimento Alisamentos e Tratamentos</h1>
+<h2>Ficha de Anamnese</h2>
+
+<div class="section">
+  <div class="sec-title">Dados pessoais</div>
+  <div class="row">
+    <div class="field"><label>Nome</label><div class="val">${cli.name || '—'}</div></div>
+    <div class="field"><label>Data de nascimento</label><div class="val">${fmtDate(an.dtNasc)}</div></div>
+  </div>
+  <div class="row">
+    <div class="field"><label>Telefone / Cel.</label><div class="val">${cli.phone || '—'}</div></div>
+    <div class="field"><label>Ocupação</label><div class="val">${an.ocupacao || '—'}</div></div>
+    <div class="field"><label>E-mail</label><div class="val">${cli.email || '—'}</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="sec-title">Historial capilar</div>
+  <div class="row">
+    <div class="field"><label>Procedimento capilar nos últimos 3 meses?</label><div class="val">${yn(an.procRecente)}${an.procRecenteSpec ? ' — ' + an.procRecenteSpec : ''}</div></div>
+  </div>
+  <div class="row">
+    <div class="field"><label>Realiza hidratação / reconstrução com frequência?</label><div class="val">${yn(an.hidratacao)}${an.hidratacaoSpec ? ' — ' + an.hidratacaoSpec : ''}</div></div>
+  </div>
+  <div class="row">
+    <div class="field"><label>Usa ferramentas de calor (secador, chapinha, modelador)?</label><div class="val">${yn(an.calor)}${an.calorSpec ? ' — ' + an.calorSpec : ''}</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="sec-title">Patologias e saúde</div>
+  <div class="row">
+    <div class="field"><label>Patologias no couro cabeludo / haste capilar</label><div class="val">${patologias}</div></div>
+  </div>
+  <div class="grid2">
+    <div class="field"><label>Possui algum tipo de doença?</label><div class="val">${yn(an.doenca)}${an.doencaSpec ? ' — ' + an.doencaSpec : ''}</div></div>
+    <div class="field"><label>Gestante ou a amamentar?</label><div class="val">${yn(an.gestante)}${an.gestanteMeses ? ' (' + an.gestanteMeses + ' meses)' : ''}</div></div>
+  </div>
+  <div class="row">
+    <div class="field"><label>Alergia a componente químico?</label><div class="val">${yn(an.alergia)}${an.alergiaSpec ? ' — ' + an.alergiaSpec : ''}</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="sec-title">Tipo de cabelo</div>
+  <div class="grid3">
+    <div class="field"><label>Tipo</label><div class="val">${tipoCabeloLabel}${an.subtipo ? ' · ' + an.subtipo : ''}</div></div>
+    <div class="field"><label>Cor natural?</label><div class="val">${yn(an.corNatural)}</div></div>
+    <div class="field"><label>Característica</label><div class="val">${an.caracteristica || '—'}</div></div>
+    <div class="field"><label>Densidade</label><div class="val">${an.densidade || '—'}</div></div>
+    <div class="field"><label>Textura</label><div class="val">${textura ? textura.charAt(0).toUpperCase()+textura.slice(1) : '—'}</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="sec-title">Procedimento realizado</div>
+  <div class="grid2">
+    <div class="field"><label>Procedimento</label><div class="val">${an.procedimento || '—'}</div></div>
+    <div class="field"><label>Produto utilizado</label><div class="val">${an.produto || '—'}${an.gramas ? ' · ' + an.gramas : ''}</div></div>
+    <div class="field"><label>Retoque de raiz</label><div class="val">${yn(an.retoque)}</div></div>
+    <div class="field"><label>Cabelo inteiro</label><div class="val">${yn(an.inteiroToggle)}</div></div>
+    <div class="field"><label>Finalização</label><div class="val">${an.finalizacao || '—'}</div></div>
+    <div class="field"><label>Home care indicado</label><div class="val">${an.homeCare || '—'}</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="sec-title">Teste de mechas</div>
+  <div class="mechas-header"><span>Química utilizada</span><span>Tempo</span><span>Data</span><span>Resultado</span></div>
+  <div class="mechas-row">
+    <span>${an.mecha1Quimica || '—'}</span>
+    <span>${an.mecha1Tempo || '—'}</span>
+    <span>${fmtDate(an.mecha1Data)}</span>
+    <span>${an.mecha1Resultado || '—'}</span>
+  </div>
+  <div class="mechas-row">
+    <span>${an.mecha2Quimica || '—'}</span>
+    <span>${an.mecha2Tempo || '—'}</span>
+    <span>${fmtDate(an.mecha2Data)}</span>
+    <span>${an.mecha2Resultado || '—'}</span>
+  </div>
+</div>
+
+<div class="legal">
+  Declaro que as informações acima são verdadeiras, não cabendo ao profissional qualquer responsabilidade por informações omitidas nesta avaliação.
+</div>
+
+<div class="sig-block">
+  <div class="sig-row">
+    <div class="sig-col">
+      <div class="sig-line">${sigHtml}</div>
+      <div class="sig-label">Assinatura da cliente</div>
+    </div>
+    <div class="sig-col">
+      <div class="sig-line"></div>
+      <div class="sig-label">Profissional · Salão Érika</div>
+    </div>
+    <div class="sig-col" style="max-width:120px">
+      <div class="sig-line"><span style="font-size:10pt">${fmtDate(an.data)}</span></div>
+      <div class="sig-label">Data</div>
+    </div>
+  </div>
+</div>
+
+<div style="text-align:center;margin-top:22px;font-size:7.5pt;color:#aaa;font-family:Arial,sans-serif;letter-spacing:1px">
+  Salão Érika · Gerado em ${new Date().toLocaleDateString('pt-PT')} · ${new Date().toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'})}
+</div>
+
+</body>
+</html>`;
+
+  const win = window.open('', '_blank');
+  if(!win){ toast('Permita popups para gerar o PDF'); return; }
+  win.document.write(html);
+  win.document.close();
+  win.focus();
+  setTimeout(()=>{ win.print(); }, 400);
+}
+
+// Pedir permissão para notificações ao abrir marcações
+document.querySelector('[data-tab="marcacoes"]').addEventListener('click', ()=>{
+  if('Notification' in window && Notification.permission==='default'){
+    setTimeout(()=>Notification.requestPermission(),800);
+  }
+});
+
+// Fechar modais ao clicar fora
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click', e=>{
+    if(e.target===o) o.classList.remove('show');
+  });
+});
+
+// Inicializar toggles do modal de anamnese
+initAnamneseToggles();
+</script>
+</body>
+</html>
