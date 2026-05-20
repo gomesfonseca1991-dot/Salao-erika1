@@ -452,6 +452,8 @@ hr.soft{border:none;border-top:1px solid var(--line);margin:18px 0}
 </head>
 <body>
 
+<div id="appRoot">
+
 <header class="app-header">
   <div class="brand">
     <div class="brand-logo">É</div>
@@ -823,13 +825,19 @@ hr.soft{border:none;border-top:1px solid var(--line);margin:18px 0}
     </div>
 
     <div class="card">
+      <div class="card-title">☁ Sincronização</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Os seus dados estão sincronizados na cloud. Entre com a mesma conta noutro dispositivo para ver tudo atualizado.</p>
+      <button class="btn btn-ghost" onclick="window.fbLogout && window.fbLogout()" style="border:1px solid var(--plum);color:var(--plum)">🔓 Terminar sessão</button>
+    </div>
+
+    <div class="card">
       <div class="card-title" style="color:var(--red)">Zona de perigo</div>
       <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Apaga todos os dados deste dispositivo. Faça backup antes!</p>
       <button class="btn btn-danger" onclick="confirmReset()">🗑 Apagar todos os dados</button>
     </div>
 
     <p style="text-align:center;font-family:'Fraunces',serif;font-style:italic;color:var(--muted);font-size:12px;margin-top:24px">
-      Salão Érika · v1.0
+      Salão Érika · v2.0 · sincronizado
     </p>
   </section>
 </main>
@@ -1197,7 +1205,99 @@ hr.soft{border:none;border-top:1px solid var(--line);margin:18px 0}
   </div>
 </div>
 
+</div><!-- /#appRoot -->
+
 <div class="toast" id="toast"></div>
+
+<!-- ===== ECRÃ DE LOGIN (sincronização Firebase) ===== -->
+<div id="loginScreen" style="display:none;position:fixed;inset:0;background:#2D7A4F;z-index:99999;flex-direction:column;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif">
+  <div style="background:#fff;border-radius:18px;padding:34px 26px;width:100%;max-width:360px;box-shadow:0 12px 40px rgba(0,0,0,.25)">
+    <div style="text-align:center;margin-bottom:22px">
+      <div style="font-family:Georgia,serif;font-style:italic;font-size:52px;color:#2D7A4F;line-height:1">É</div>
+      <div style="font-size:22px;font-weight:700;color:#2D7A4F;margin-top:6px">Salão Érika</div>
+      <div style="color:#888;font-size:14px;margin-top:2px">Entrar na sua conta</div>
+    </div>
+    <input type="email" id="loginEmail" placeholder="Email" autocomplete="email" style="width:100%;box-sizing:border-box;padding:14px;border:1.5px solid #ddd;border-radius:11px;font-size:16px;margin-bottom:11px">
+    <input type="password" id="loginPass" placeholder="Palavra-passe" autocomplete="current-password" style="width:100%;box-sizing:border-box;padding:14px;border:1.5px solid #ddd;border-radius:11px;font-size:16px;margin-bottom:14px">
+    <button id="loginBtn" style="width:100%;padding:15px;background:#2D7A4F;color:#fff;border:none;border-radius:11px;font-size:16px;font-weight:600;cursor:pointer">Entrar</button>
+    <div id="loginError" style="color:#c0392b;font-size:14px;text-align:center;min-height:20px;margin-top:12px"></div>
+  </div>
+  <div style="color:rgba(255,255,255,.65);font-size:12px;margin-top:22px">dados sincronizados na cloud · seguro</div>
+</div>
+
+<!-- Esconde a app enquanto não há sessão -->
+<style>body:not(.is-authed) #appRoot{display:none!important}</style>
+
+<script type="module">
+/* ===== INTEGRAÇÃO FIREBASE ===== */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, onSnapshot, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDnrXOGM6fXd110utHsLxWaJhwZEB5G-FM",
+  authDomain: "salaoerika-2d526.firebaseapp.com",
+  projectId: "salaoerika-2d526",
+  storageBucket: "salaoerika-2d526.firebasestorage.app",
+  messagingSenderId: "429034917079",
+  appId: "1:429034917079:web:88bb7932ebadca58d2b492",
+  measurementId: "G-GTEQ5R1T94"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const fbDb = getFirestore(fbApp);
+const fbAuth = getAuth(fbApp);
+enableIndexedDbPersistence(fbDb).catch(()=>{});
+setPersistence(fbAuth, browserLocalPersistence).catch(()=>{});
+
+// Estado global da ligação (usado pelo código da app mais abaixo)
+window.FB = {
+  db: fbDb, auth: fbAuth, uid: null, ready: false,
+  doc: () => doc(fbDb, "utilizadores", window.FB.uid, "dados", "principal"),
+  getDoc, setDoc, onSnapshot
+};
+
+// Login
+const loginScreen = document.getElementById('loginScreen');
+const loginBtn = document.getElementById('loginBtn');
+const loginError = document.getElementById('loginError');
+
+function showLogin(){ loginScreen.style.display='flex'; document.body.classList.remove('is-authed'); }
+function hideLogin(){ loginScreen.style.display='none'; document.body.classList.add('is-authed'); }
+
+loginBtn.addEventListener('click', async ()=>{
+  loginError.textContent='';
+  loginBtn.disabled=true; loginBtn.textContent='A entrar…';
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPass').value;
+  try{
+    await signInWithEmailAndPassword(fbAuth, email, pass);
+  }catch(err){
+    const msgs={'auth/invalid-email':'Email inválido.','auth/user-not-found':'Conta não encontrada.','auth/wrong-password':'Palavra-passe incorreta.','auth/invalid-credential':'Email ou palavra-passe incorretos.','auth/network-request-failed':'Sem ligação à internet.','auth/too-many-requests':'Demasiadas tentativas. Aguarde.'};
+    loginError.textContent = msgs[err.code] || ('Erro: '+err.code);
+  }finally{
+    loginBtn.disabled=false; loginBtn.textContent='Entrar';
+  }
+});
+document.getElementById('loginPass').addEventListener('keydown', e=>{ if(e.key==='Enter') loginBtn.click(); });
+
+onAuthStateChanged(fbAuth, (user)=>{
+  if(user){
+    window.FB.uid = user.uid;
+    window.FB.ready = true;
+    hideLogin();
+    // Avisa a app que pode arrancar e sincronizar
+    window.dispatchEvent(new CustomEvent('fbReady'));
+  }else{
+    window.FB.uid = null;
+    window.FB.ready = false;
+    showLogin();
+  }
+});
+
+// Função de logout disponível globalmente
+window.fbLogout = async ()=>{ if(confirm('Terminar sessão?')){ await signOut(fbAuth); location.reload(); } };
+</script>
 
 <script>
 /* =====================================================================
@@ -1235,6 +1335,22 @@ function loadDB(){
     }
   }catch(e){console.error(e)}
 }
+
+// Aplica dados vindos da cloud ao estado local + ecrã
+function applyData(d){
+  if(!d) return;
+  state.transactions = d.transactions || [];
+  state.appointments = d.appointments || [];
+  state.clients = d.clients || [];
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({version:1, ...d, savedAt:new Date().toISOString()}));
+  updateHeader();
+  renderDashboard();
+  refillClientLists();
+  if(typeof renderBackupStats==='function') try{renderBackupStats()}catch(e){}
+}
+
+let _fbSaveTimer=null, _fbApplyingRemote=false;
+
 function saveDB(){
   const d = {
     version:1,
@@ -1243,8 +1359,41 @@ function saveDB(){
     clients:state.clients,
     savedAt:new Date().toISOString(),
   };
+  // 1) Guarda já localmente (rápido, funciona offline)
   localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+  // 2) Envia para a cloud (com pequeno atraso para agrupar várias gravações)
+  if(window.FB && window.FB.ready && !_fbApplyingRemote){
+    clearTimeout(_fbSaveTimer);
+    _fbSaveTimer = setTimeout(()=>{
+      window.FB.setDoc(window.FB.doc(), d).catch(err=>console.warn('Sync falhou:', err));
+    }, 400);
+  }
 }
+
+// Liga a sincronização em tempo real quando o login estiver pronto
+async function startCloudSync(){
+  if(!window.FB || !window.FB.ready) return;
+  try{
+    const snap = await window.FB.getDoc(window.FB.doc());
+    if(snap.exists()){
+      // Já há dados na cloud → usar esses
+      _fbApplyingRemote=true; applyData(snap.data()); _fbApplyingRemote=false;
+    }else{
+      // Primeira vez → enviar os dados locais para a cloud (migração automática)
+      const local = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"transactions":[],"appointments":[],"clients":[]}');
+      await window.FB.setDoc(window.FB.doc(), {version:1, ...local, savedAt:new Date().toISOString()});
+      toast('✓ Dados enviados para a cloud');
+    }
+  }catch(e){ console.warn('Sync inicial:', e); }
+
+  // Ouvir mudanças futuras (de outros dispositivos)
+  window.FB.onSnapshot(window.FB.doc(), (snap)=>{
+    if(!snap.exists()) return;
+    if(snap.metadata.hasPendingWrites) return; // ignora a própria gravação
+    _fbApplyingRemote=true; applyData(snap.data()); _fbApplyingRemote=false;
+  });
+}
+window.addEventListener('fbReady', startCloudSync);
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
 
 /* ===== HELPERS ===== */
@@ -2167,235 +2316,4 @@ function saveAnamnese(){
     gramas: document.getElementById('anGramas').value,
     retoque: document.getElementById('anRetoque').value,
     inteiroToggle: document.getElementById('anInteiroToggle').value,
-    finalizacao: document.getElementById('anFinalizacao').value,
-    homeCare: document.getElementById('anHomeCare').value,
-    mecha1Quimica: document.getElementById('anMecha1Quimica').value,
-    mecha1Tempo: document.getElementById('anMecha1Tempo').value,
-    mecha1Data: document.getElementById('anMecha1Data').value,
-    mecha1Resultado: document.getElementById('anMecha1Resultado').value,
-    mecha2Quimica: document.getElementById('anMecha2Quimica').value,
-    mecha2Tempo: document.getElementById('anMecha2Tempo').value,
-    mecha2Data: document.getElementById('anMecha2Data').value,
-    mecha2Resultado: document.getElementById('anMecha2Resultado').value,
-    data: document.getElementById('anData').value,
-    assinatura: getSignatureDataURL(),
-    updatedAt: new Date().toISOString(),
-  };
-  saveDB();
-  closeAnamneseModal();
-  toast('✓ Ficha de anamnese guardada');
-  renderClients();
-}
-
-/* ===== EXPORTAR PDF ANAMNESE ===== */
-function exportAnamnесePDF(){
-  const cli = state.editingAnamneseClient;
-  if(!cli || !cli.anamnese){
-    toast('Guarde a ficha primeiro');
-    return;
-  }
-  const an = cli.anamnese;
-
-  // Guardar primeiro com assinatura actual
-  const tipoCabelo = (document.querySelector('input[name="anTipoCabelo"]:checked') || {}).value || an.tipoCabelo || '';
-  const textura = (document.querySelector('input[name="anTextura"]:checked') || {}).value || an.textura || '';
-  const sigDataUrl = getSignatureDataURL() || an.assinatura || null;
-
-  const fmtDate = iso => iso ? new Date(iso).toLocaleDateString('pt-PT') : '—';
-  const yn = v => v === 'sim' ? 'Sim' : 'Não';
-  const patologias = [
-    an.patDermatite && 'Dermatite',
-    an.patQueda && 'Queda de cabelo',
-    an.patQuebra && 'Quebra',
-    an.patPontas && 'Pontas duplas',
-    an.patNos && 'Nós',
-    an.patRarefacao && 'Rarefação',
-  ].filter(Boolean).join(', ') || '—';
-
-  const tipoCabeloLabel = {
-    '1-liso':'1 · Liso','2-ondulado':'2 · Ondulado',
-    '3-cacheado':'3 · Cacheado','4-crespo':'4 · Crespo'
-  }[tipoCabelo] || '—';
-
-  const sigHtml = sigDataUrl
-    ? `<img src="${sigDataUrl}" style="max-width:280px;height:70px;object-fit:contain;display:block;margin:4px 0">`
-    : '<div style="height:50px;border-bottom:1px solid #333;width:250px;margin:8px 0"></div>';
-
-  const html = `<!DOCTYPE html>
-<html lang="pt">
-<head>
-<meta charset="UTF-8">
-<title>Ficha de Anamnese — ${cli.name}</title>
-<style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Georgia',serif;font-size:11pt;color:#111;background:white;padding:20px 28px}
-  h1{font-size:17pt;text-align:center;font-style:italic;letter-spacing:1px;border-bottom:2.5px solid #2D7A4F;padding-bottom:8px;margin-bottom:4px;color:#1F5C39}
-  h2{font-size:11pt;text-align:center;text-transform:uppercase;letter-spacing:3px;color:#2D7A4F;margin-bottom:18px;font-family:Arial,sans-serif}
-  .section{margin-bottom:14px}
-  .sec-title{font-size:8pt;text-transform:uppercase;letter-spacing:2px;color:#2D7A4F;font-family:Arial,sans-serif;font-weight:bold;border-bottom:1px solid #c8e6d0;padding-bottom:3px;margin-bottom:8px}
-  .row{display:flex;gap:10px;margin-bottom:6px;align-items:baseline;flex-wrap:wrap}
-  .field{flex:1;min-width:120px}
-  .field label{font-size:7.5pt;text-transform:uppercase;letter-spacing:1px;color:#555;font-family:Arial,sans-serif;display:block;margin-bottom:1px}
-  .field .val{font-size:10pt;border-bottom:1px solid #ccc;min-height:18px;padding-bottom:2px}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin-bottom:6px}
-  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px 12px;margin-bottom:6px}
-  .grid4{display:grid;grid-template-columns:2fr 1fr 1fr 2fr;gap:6px;font-size:9pt}
-  .mechas-header{background:#e8f5ee;font-size:7.5pt;text-transform:uppercase;letter-spacing:1px;padding:4px 6px;color:#1F5C39;font-family:Arial,sans-serif;font-weight:bold;border-radius:4px 4px 0 0;display:grid;grid-template-columns:2fr 1fr 1fr 2fr;gap:6px;margin-bottom:0}
-  .mechas-row{display:grid;grid-template-columns:2fr 1fr 1fr 2fr;gap:6px;font-size:9.5pt;padding:4px 6px;border:1px solid #d0e8d8;border-top:none}
-  .mechas-row:first-of-type{border-top:none}
-  .legal{font-size:8.5pt;color:#444;line-height:1.55;background:#f5fbf7;border:1px solid #c8e6d0;border-radius:6px;padding:10px 12px;margin:14px 0 8px;font-style:italic}
-  .sig-block{margin-top:10px}
-  .sig-row{display:flex;gap:40px;align-items:flex-end;margin-top:8px}
-  .sig-col{flex:1}
-  .sig-line{border-bottom:1px solid #333;min-height:55px;display:flex;align-items:flex-end;padding-bottom:4px}
-  .sig-label{font-size:7.5pt;text-transform:uppercase;letter-spacing:1px;color:#555;font-family:Arial,sans-serif;margin-top:4px}
-  .logo-area{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:12px}
-  .logo-circle{width:42px;height:42px;border-radius:10px;background:#2D7A4F;display:flex;align-items:center;justify-content:center;color:white;font-size:26px;font-style:italic;font-family:Georgia,serif}
-  .salon-name{font-size:14pt;font-weight:bold;color:#2D7A4F;font-family:Georgia,serif;font-style:italic}
-  @media print{body{padding:10px 16px}}
-</style>
-</head>
-<body>
-
-<div class="logo-area">
-  <div class="logo-circle">É</div>
-  <div><div class="salon-name">Salão Érika</div><div style="font-size:8pt;color:#666;font-family:Arial;letter-spacing:2px;text-transform:uppercase">Gestão · Beleza</div></div>
-</div>
-<h1>Procedimento Alisamentos e Tratamentos</h1>
-<h2>Ficha de Anamnese</h2>
-
-<div class="section">
-  <div class="sec-title">Dados pessoais</div>
-  <div class="row">
-    <div class="field"><label>Nome</label><div class="val">${cli.name || '—'}</div></div>
-    <div class="field"><label>Data de nascimento</label><div class="val">${fmtDate(an.dtNasc)}</div></div>
-  </div>
-  <div class="row">
-    <div class="field"><label>Telefone / Cel.</label><div class="val">${cli.phone || '—'}</div></div>
-    <div class="field"><label>Ocupação</label><div class="val">${an.ocupacao || '—'}</div></div>
-    <div class="field"><label>E-mail</label><div class="val">${cli.email || '—'}</div></div>
-  </div>
-</div>
-
-<div class="section">
-  <div class="sec-title">Historial capilar</div>
-  <div class="row">
-    <div class="field"><label>Procedimento capilar nos últimos 3 meses?</label><div class="val">${yn(an.procRecente)}${an.procRecenteSpec ? ' — ' + an.procRecenteSpec : ''}</div></div>
-  </div>
-  <div class="row">
-    <div class="field"><label>Realiza hidratação / reconstrução com frequência?</label><div class="val">${yn(an.hidratacao)}${an.hidratacaoSpec ? ' — ' + an.hidratacaoSpec : ''}</div></div>
-  </div>
-  <div class="row">
-    <div class="field"><label>Usa ferramentas de calor (secador, chapinha, modelador)?</label><div class="val">${yn(an.calor)}${an.calorSpec ? ' — ' + an.calorSpec : ''}</div></div>
-  </div>
-</div>
-
-<div class="section">
-  <div class="sec-title">Patologias e saúde</div>
-  <div class="row">
-    <div class="field"><label>Patologias no couro cabeludo / haste capilar</label><div class="val">${patologias}</div></div>
-  </div>
-  <div class="grid2">
-    <div class="field"><label>Possui algum tipo de doença?</label><div class="val">${yn(an.doenca)}${an.doencaSpec ? ' — ' + an.doencaSpec : ''}</div></div>
-    <div class="field"><label>Gestante ou a amamentar?</label><div class="val">${yn(an.gestante)}${an.gestanteMeses ? ' (' + an.gestanteMeses + ' meses)' : ''}</div></div>
-  </div>
-  <div class="row">
-    <div class="field"><label>Alergia a componente químico?</label><div class="val">${yn(an.alergia)}${an.alergiaSpec ? ' — ' + an.alergiaSpec : ''}</div></div>
-  </div>
-</div>
-
-<div class="section">
-  <div class="sec-title">Tipo de cabelo</div>
-  <div class="grid3">
-    <div class="field"><label>Tipo</label><div class="val">${tipoCabeloLabel}${an.subtipo ? ' · ' + an.subtipo : ''}</div></div>
-    <div class="field"><label>Cor natural?</label><div class="val">${yn(an.corNatural)}</div></div>
-    <div class="field"><label>Característica</label><div class="val">${an.caracteristica || '—'}</div></div>
-    <div class="field"><label>Densidade</label><div class="val">${an.densidade || '—'}</div></div>
-    <div class="field"><label>Textura</label><div class="val">${textura ? textura.charAt(0).toUpperCase()+textura.slice(1) : '—'}</div></div>
-  </div>
-</div>
-
-<div class="section">
-  <div class="sec-title">Procedimento realizado</div>
-  <div class="grid2">
-    <div class="field"><label>Procedimento</label><div class="val">${an.procedimento || '—'}</div></div>
-    <div class="field"><label>Produto utilizado</label><div class="val">${an.produto || '—'}${an.gramas ? ' · ' + an.gramas : ''}</div></div>
-    <div class="field"><label>Retoque de raiz</label><div class="val">${yn(an.retoque)}</div></div>
-    <div class="field"><label>Cabelo inteiro</label><div class="val">${yn(an.inteiroToggle)}</div></div>
-    <div class="field"><label>Finalização</label><div class="val">${an.finalizacao || '—'}</div></div>
-    <div class="field"><label>Home care indicado</label><div class="val">${an.homeCare || '—'}</div></div>
-  </div>
-</div>
-
-<div class="section">
-  <div class="sec-title">Teste de mechas</div>
-  <div class="mechas-header"><span>Química utilizada</span><span>Tempo</span><span>Data</span><span>Resultado</span></div>
-  <div class="mechas-row">
-    <span>${an.mecha1Quimica || '—'}</span>
-    <span>${an.mecha1Tempo || '—'}</span>
-    <span>${fmtDate(an.mecha1Data)}</span>
-    <span>${an.mecha1Resultado || '—'}</span>
-  </div>
-  <div class="mechas-row">
-    <span>${an.mecha2Quimica || '—'}</span>
-    <span>${an.mecha2Tempo || '—'}</span>
-    <span>${fmtDate(an.mecha2Data)}</span>
-    <span>${an.mecha2Resultado || '—'}</span>
-  </div>
-</div>
-
-<div class="legal">
-  Declaro que as informações acima são verdadeiras, não cabendo ao profissional qualquer responsabilidade por informações omitidas nesta avaliação.
-</div>
-
-<div class="sig-block">
-  <div class="sig-row">
-    <div class="sig-col">
-      <div class="sig-line">${sigHtml}</div>
-      <div class="sig-label">Assinatura da cliente</div>
-    </div>
-    <div class="sig-col">
-      <div class="sig-line"></div>
-      <div class="sig-label">Profissional · Salão Érika</div>
-    </div>
-    <div class="sig-col" style="max-width:120px">
-      <div class="sig-line"><span style="font-size:10pt">${fmtDate(an.data)}</span></div>
-      <div class="sig-label">Data</div>
-    </div>
-  </div>
-</div>
-
-<div style="text-align:center;margin-top:22px;font-size:7.5pt;color:#aaa;font-family:Arial,sans-serif;letter-spacing:1px">
-  Salão Érika · Gerado em ${new Date().toLocaleDateString('pt-PT')} · ${new Date().toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'})}
-</div>
-
-</body>
-</html>`;
-
-  const win = window.open('', '_blank');
-  if(!win){ toast('Permita popups para gerar o PDF'); return; }
-  win.document.write(html);
-  win.document.close();
-  win.focus();
-  setTimeout(()=>{ win.print(); }, 400);
-}
-
-// Pedir permissão para notificações ao abrir marcações
-document.querySelector('[data-tab="marcacoes"]').addEventListener('click', ()=>{
-  if('Notification' in window && Notification.permission==='default'){
-    setTimeout(()=>Notification.requestPermission(),800);
-  }
-});
-
-// Fechar modais ao clicar fora
-document.querySelectorAll('.modal-overlay').forEach(o=>{
-  o.addEventListener('click', e=>{
-    if(e.target===o) o.classList.remove('show');
-  });
-});
-
-// Inicializar toggles do modal de anamnese
-initAnamneseToggles();
-</script>
-</body>
-</html>
+    finalizacao: document.get
