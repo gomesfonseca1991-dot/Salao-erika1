@@ -1,0 +1,89 @@
+<!-- ============================================================
+     login.html — Ecrã de login
+     Cole este HTML no início do <body> do seu index.html.
+     A app principal só aparece depois de fazer login.
+     ============================================================ -->
+
+<div id="ecra-login" style="display:none; position:fixed; inset:0; background:#2D7A4F;
+     z-index:9999; display:flex; flex-direction:column; align-items:center;
+     justify-content:center; padding:24px; font-family:system-ui,sans-serif;">
+
+  <div style="background:white; border-radius:16px; padding:32px 24px;
+              width:100%; max-width:360px; box-shadow:0 8px 32px rgba(0,0,0,.2);">
+
+    <div style="text-align:center; margin-bottom:24px;">
+      <div style="font-size:48px;">É</div>
+      <h1 style="margin:8px 0 4px; font-size:22px; color:#2D7A4F;">Salão Érika</h1>
+      <p style="margin:0; color:#666; font-size:14px;">Entrar na sua conta</p>
+    </div>
+
+    <form id="form-login" style="display:flex; flex-direction:column; gap:12px;">
+      <input type="email" id="login-email" placeholder="Email" required
+             autocomplete="email"
+             style="padding:14px; border:1px solid #ddd; border-radius:10px;
+                    font-size:16px; width:100%; box-sizing:border-box;">
+
+      <input type="password" id="login-password" placeholder="Password" required
+             autocomplete="current-password"
+             style="padding:14px; border:1px solid #ddd; border-radius:10px;
+                    font-size:16px; width:100%; box-sizing:border-box;">
+
+      <button type="submit"
+              style="padding:14px; background:#2D7A4F; color:white; border:none;
+                     border-radius:10px; font-size:16px; font-weight:600;
+                     cursor:pointer;">
+        Entrar
+      </button>
+
+      <div id="login-erro" style="color:#c00; font-size:14px; text-align:center;
+                                   min-height:20px;"></div>
+    </form>
+  </div>
+
+  <p style="color:rgba(255,255,255,.7); font-size:12px; margin-top:24px;">
+    Salão Érika · v2.0 (sincronizado)
+  </p>
+</div>
+
+<!-- Script de login -->
+<script type="module">
+  import { entrar, aoMudarLogin } from "./auth.js";
+
+  const ecraLogin = document.getElementById("ecra-login");
+  const form = document.getElementById("form-login");
+  const erroDiv = document.getElementById("login-erro");
+
+  // Quando o estado de login muda
+  aoMudarLogin((user) => {
+    if (user) {
+      // Tem sessão → esconder login, mostrar app
+      ecraLogin.style.display = "none";
+      document.body.classList.add("autenticado");
+      // Dispara evento para a app inicializar
+      window.dispatchEvent(new CustomEvent("utilizadorPronto", { detail: user }));
+    } else {
+      // Sem sessão → mostrar login
+      ecraLogin.style.display = "flex";
+      document.body.classList.remove("autenticado");
+    }
+  });
+
+  // Submeter formulário
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    erroDiv.textContent = "";
+
+    const email = document.getElementById("login-email").value.trim();
+    const password = document.getElementById("login-password").value;
+
+    const resultado = await entrar(email, password);
+    if (!resultado.ok) {
+      erroDiv.textContent = resultado.erro;
+    }
+  });
+</script>
+
+<!-- Esconder app até autenticar -->
+<style>
+  body:not(.autenticado) .app-principal { display: none !important; }
+</style>

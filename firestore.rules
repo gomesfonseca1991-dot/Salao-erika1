@@ -1,0 +1,29 @@
+// ============================================================
+// firestore.rules
+// Regras de segurança — cole isto em:
+// Firebase Console → Firestore → Rules → Publicar
+// ============================================================
+//
+// Estas regras garantem que:
+// 1. Só utilizadores autenticados acedem aos dados
+// 2. Cada utilizador só vê os SEUS próprios dados
+// 3. Ninguém pode aceder aos dados de outra pessoa
+// ============================================================
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Cada utilizador só lê/escreve dentro do seu próprio "espaço"
+    match /utilizadores/{userId}/{document=**} {
+      allow read, write: if request.auth != null
+                        && request.auth.uid == userId;
+    }
+
+    // Bloqueia tudo o resto
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
